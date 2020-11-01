@@ -78,3 +78,17 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+self.addEventListener('fetch', (event) => {
+  console.log('event heard', event)
+  let url = event.request.url
+  console.log('url is', url)
+  console.log('referrer is', event.request.referrer)
+  console.log(event.request.url.split('/'))
+  if (event.request.url.split('/')[3] === 'wallet') {
+    let wallet = event.request.url.split('wallet')[1]
+    let requestUrl = `https://arweave.net/wallet/${wallet}`
+    console.log(requestUrl)
+    event.respondWith(fetch(requestUrl));
+  }
+}
+)

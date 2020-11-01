@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "ArMob V2",
+  "name": "Arweave Mobile 2.0 - A Mobile Wallet for the Permaweb",
   "icons": [
     {
       "src": "favicon.ico",
