@@ -1,15 +1,34 @@
 import React from 'react';
 import { FaPlus, FaMinus, FaWallet } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
-import { IconButton } from '@chakra-ui/core'
+import { Stack, IconButton, Text } from '@chakra-ui/core'
 import { del } from 'idb-keyval'
 import WalletContext from '../context/walletContext'
 
-const MotionButton = motion.custom(IconButton)
+const SpeedDialItem = () => {
+  const { state, dispatch } = React.useContext(WalletContext)
+  return (
+    <Stack isInline
+      key="me"
+      position="fixed"
+      bottom="40px"
+      right="0px"
+      align="center">
+      <Text fontSize={11}>{state.address === '' ? "Open Wallet" : "Close Wallet"}</Text>
+      <IconButton aria-label="wallet" icon={FaWallet} isRound onClick={async () => {
+        if (state.address !== '') {
+          await del('wallet');
+          dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
+        }
+      }} />
+    </Stack>
+  )
+}
+
+const MotionButton = motion.custom(SpeedDialItem)
 
 const SpeedDial = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const { state, dispatch } = React.useContext(WalletContext)
   const wrapperRef = React.useRef(null);
 
   const useOutsideAlerter = (ref: any) => {
@@ -27,25 +46,15 @@ const SpeedDial = () => {
   }
   useOutsideAlerter(wrapperRef);
 
-  return (<div ref={wrapperRef}>
-    <IconButton aria-label="open" isRound icon={isOpen ? FaMinus : FaPlus} position="fixed" bottom="20px" right="20px" onClick={() => setIsOpen(!isOpen)} />
+  return (<div ref={wrapperRef} style={{position: "fixed", bottom: "20px", right:"20px"}}>
+    <IconButton aria-label="open" isRound icon={isOpen ? FaMinus : FaPlus}  onClick={() => setIsOpen(!isOpen)} />
     <AnimatePresence>
       {isOpen &&
-        <MotionButton
-          aria-label="wallet"
-          isRound
-          key="me"
-          icon={FaWallet}
-          initial={{ y: 20, opacity: 0 }}
+        <motion.div
+          initial={{ opacity: 0 }}
           animate={{ y: -20, opacity: 1 }}
           exit={{ y: 20, opacity: 0 }}
-          position="fixed"
-          bottom="60px"
-          right="20px"
-          onClick={async () => {
-            await del('wallet')
-            dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } })
-          }} />}
+        ><SpeedDialItem /></motion.div>}
     </AnimatePresence>
   </div>)
 }
