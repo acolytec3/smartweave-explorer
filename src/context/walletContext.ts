@@ -4,12 +4,17 @@ export type tokenBalance = {
     ticker: string,
     balance: number
 }
+
+export type wallet = {
+    address: string,
+    key?: any
+}
 export type walletState = {
     key : any,
     balance: string,
     address: string,
     tokens?: tokenBalance[],
-    wallets?: string[]
+    wallets?: wallet[]
 }
 export const initWalletState: walletState = {
         key: {} as any,

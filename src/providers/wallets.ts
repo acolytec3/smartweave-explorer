@@ -22,7 +22,7 @@ export const getTokens = async (address: string): Promise<any[]> => {
   let res = await axios.post('https://arweave.net/graphql', {
     query: `query {
       transactions(first:20,
-          owners:["bLkyTRJCYg8WxBKrjBwAaRe1H7HYDfXzl7YKCENvw-Q"],
+          owners:["${address}"],
           tags: [{
               name: "Exchange",
             values:["Verto"]

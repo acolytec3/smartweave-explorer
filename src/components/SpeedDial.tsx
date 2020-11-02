@@ -5,30 +5,32 @@ import { Stack, IconButton, Text } from '@chakra-ui/core'
 import { del } from 'idb-keyval'
 import WalletContext from '../context/walletContext'
 
-const SpeedDialItem = () => {
-  const { state, dispatch } = React.useContext(WalletContext)
-  return (
-    <Stack isInline
-      key="me"
-      position="fixed"
-      bottom="40px"
-      right="0px"
-      align="center">
-      <Text fontSize={11}>{state.address === '' ? "Open Wallet" : "Close Wallet"}</Text>
-      <IconButton aria-label="wallet" icon={FaWallet} isRound onClick={async () => {
-        if (state.address !== '') {
-          await del('wallet');
-          dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
-        }
-      }} />
-    </Stack>
-  )
-}
-
-const SpeedDial = () => {
+const SpeedDial= (props : any)=> {
   const [isOpen, setIsOpen] = React.useState(false);
   const wrapperRef = React.useRef(null);
-
+  
+  const SpeedDialItem = () => {
+    const { state, dispatch } = React.useContext(WalletContext)
+  
+    return (
+      <Stack isInline
+        key="me"
+        position="fixed"
+        bottom="40px"
+        right="0px"
+        align="center">
+        <Text fontSize={11}>{state.address === '' ? "Open Wallet" : "Close Wallet"}</Text>
+        <IconButton aria-label="wallet" icon={FaWallet} isRound onClick={async () => {
+          if (state.address !== '') {
+            await del('wallet');
+            dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
+          }
+          //@ts-ignore
+          else props.onOpen()
+        }} />
+      </Stack>
+    )
+  }
   const useOutsideAlerter = (ref: any) => {
     React.useEffect(() => {
       function handleClickOutside(event: MouseEvent) {

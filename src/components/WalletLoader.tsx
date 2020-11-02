@@ -1,14 +1,14 @@
 import React from 'react';
 import Dropzone from 'react-dropzone'
-import { Box, Stack, Text, useToast } from '@chakra-ui/core'
+import { Box, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
 import { get, set} from 'idb-keyval'
 import { addWallet, getTokens } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
 
-const WalletLoader = () => {
+const WalletLoader = (props :any) => {
   const toast = useToast()
   const { state, dispatch } = React.useContext(WalletContext)
-
+  const [loading, setLoading] = React.useState(false)
   React.useEffect(() => {
     const loadWallet = async (data: string) => {
       let wallet = JSON.parse(data)
@@ -30,12 +30,14 @@ const WalletLoader = () => {
     reader.onabort = () => console.log('file reading was aborted')
     reader.onerror = () => console.log('file reading has failed')
     reader.onload = async function (event) {
+      setLoading(true)
       if (acceptedFiles[0].type === "application/json") {
         try {
           let walletObject = JSON.parse(event!.target!.result as string)
           let walletDeets = await addWallet(walletObject)
-          let tokens = await getTokens(state.address);
+          let tokens = await getTokens(walletDeets.address);
           await set('wallet', JSON.stringify(walletObject))
+          props.onClose();
           dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: tokens } })
         }
         catch (err) {
@@ -59,6 +61,7 @@ const WalletLoader = () => {
           description: 'Invalid file type'
         })
       }
+      setLoading(false)
     }
     try {
       reader.readAsText(acceptedFiles[0])
@@ -75,8 +78,9 @@ const WalletLoader = () => {
     }
   }
 
-  return (<Box>
-    {state.address === '' ? <Box w="100%" borderStyle='dashed' borderWidth="2px">
+  return (<Stack align="center">
+    {loading ? <Spinner /> :
+     <Box w="100%" borderStyle='dashed' borderWidth="2px">
       <Dropzone onDrop={onDrop} >
         {({ getRootProps, getInputProps }) => (
           <section>
@@ -87,9 +91,8 @@ const WalletLoader = () => {
           </section>
         )}
       </Dropzone>
-    </Box>
-      :
-      <Stack isInline><Text>{state.address}</Text><Text>{parseFloat(state.balance).toFixed(4).toLocaleString()} AR</Text></Stack>}</Box>
+    </Box>}
+    </Stack>
   )
 }
 
