@@ -1,9 +1,15 @@
 import { createContext } from 'react'
 
+export type tokenBalance = {
+    ticker: string,
+    balance: number
+}
 export type walletState = {
     key : any,
     balance: string,
-    address: string
+    address: string,
+    tokens?: tokenBalance[],
+    wallets?: string[]
 }
 export const initWalletState: walletState = {
         key: {} as any,

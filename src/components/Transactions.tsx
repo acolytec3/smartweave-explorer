@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import { Box, Stack, Text, useToast } from '@chakra-ui/core'
+import { Box, Stack, Text } from '@chakra-ui/core'
 import WalletContext from '../context/walletContext'
 
 const Txn = (txn: any) => {
@@ -12,7 +12,7 @@ const Txn = (txn: any) => {
     )
 }
 const Transactions = () => {
-    const { state, dispatch } = React.useContext(WalletContext)
+    const { state } = React.useContext(WalletContext)
     const [txns, setTxns] = React.useState([])
     console.log(state.address)
     React.useEffect(() => {

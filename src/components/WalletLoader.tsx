@@ -2,7 +2,7 @@ import React from 'react';
 import Dropzone from 'react-dropzone'
 import { Box, Stack, Text, useToast } from '@chakra-ui/core'
 import { get, set} from 'idb-keyval'
-import { addWallet } from '../providers/wallets'
+import { addWallet, getTokens } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
 
 const WalletLoader = () => {
@@ -34,8 +34,9 @@ const WalletLoader = () => {
         try {
           let walletObject = JSON.parse(event!.target!.result as string)
           let walletDeets = await addWallet(walletObject)
+          let tokens = await getTokens(state.address);
           await set('wallet', JSON.stringify(walletObject))
-          dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject } })
+          dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: tokens } })
         }
         catch (err) {
           console.log('Invalid json in wallet file')

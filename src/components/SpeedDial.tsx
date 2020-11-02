@@ -25,8 +25,6 @@ const SpeedDialItem = () => {
   )
 }
 
-const MotionButton = motion.custom(SpeedDialItem)
-
 const SpeedDial = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const wrapperRef = React.useRef(null);
