@@ -63,14 +63,13 @@ const Transactions = () => {
       .catch((err) => console.log(err))
   }, [])
   return (<Box>
-    {state.address && <React.Fragment>
     <Heading size="sm">
       Transactions
    </Heading>
    <Accordion allowToggle w="100%">
       {/* @ts-ignore */}
       {txns.length > 0 ? txns.map((txn) => Txn(txn)) : null}
-    </Accordion></React.Fragment>}
+    </Accordion>
   </Box>
   )
 }
