@@ -61,12 +61,10 @@ const Transactions = () => {
         setTxns(res.data.data.transactions.edges)
       })
       .catch((err) => console.log(err))
-  }, [])
+  }, [state.address])
+
   return (<Box>
-    <Heading size="sm">
-      Transactions
-   </Heading>
-   <Accordion allowToggle w="100%">
+    <Accordion allowToggle w="100%">
       {/* @ts-ignore */}
       {txns.length > 0 ? txns.map((txn) => Txn(txn)) : null}
     </Accordion>
