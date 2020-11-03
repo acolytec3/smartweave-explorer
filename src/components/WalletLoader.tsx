@@ -104,9 +104,9 @@ const WalletLoader = (props :any) => {
       </Dropzone> 
     </Box>
     }
-    {!loading && <Stack>
-      <Input w="93%" placeholder="Wallet address" onBlur={(evt: React.ChangeEvent<HTMLInputElement>) => {setAddress(evt.target.value)}} />
-      <Button onClick={() => addAddress()}>Track Address</Button>
+    {!loading && <Stack w="100%">
+      <Input w="93%%" placeholder="Wallet address" onBlur={(evt: React.ChangeEvent<HTMLInputElement>) => {setAddress(evt.target.value)}} />
+      <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
       </Stack>}
     </Stack>
   )
