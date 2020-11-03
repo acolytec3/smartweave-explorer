@@ -6,12 +6,15 @@ import WalletContext from '../context/walletContext'
 const Txn = (txn: any) => {
   return (
     <AccordionItem>
-      <AccordionHeader>
-        <Text>ID: {txn.node.id}</Text>
+      <AccordionHeader bg="white" border="1px" borderColor="grey">
+      <Box flex="1" textAlign="left">
+      ID: {txn.node.id}
+      </Box>
+
         <AccordionIcon />
       </AccordionHeader>
 
-      <AccordionPanel>
+      <AccordionPanel border="1px">
         {txn.node.tags.map((tag: any) => {
           return (<SimpleGrid columns={2}>
             <Text fontSize={10}>{tag.name}</Text>
@@ -64,7 +67,7 @@ const Transactions = () => {
   }, [state.address])
 
   return (<Box>
-    <Accordion allowToggle w="100%">
+    <Accordion allowToggle allowMultiple w="100%">
       {/* @ts-ignore */}
       {txns.length > 0 ? txns.map((txn) => Txn(txn)) : null}
     </Accordion>

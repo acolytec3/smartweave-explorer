@@ -45,7 +45,7 @@ function App() {
         <Stack w="100%" align="center" >
             <Heading>ArMob 2.0</Heading>
           <Tabs isFitted align="center">
-            <TabPanels>
+            <TabPanels w="90vw">
               <TabPanel>
                 {state.address !== '' &&
                   <Box>
