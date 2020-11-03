@@ -7,8 +7,8 @@ const Tokens = () => {
     return (<Box>
         <Heading size="sm">Wallet Balances</Heading>
         <SimpleGrid columns={2}>
-            <Text>Ticker</Text>
-            <Text>Balance</Text>
+            <Text borderBottom="1px" fontWeight="bold">Ticker</Text>
+            <Text borderBottom="1px" fontWeight="bold">Balance</Text>
             <Text>AR</Text>
             <Text>{state.balance}</Text>
         </SimpleGrid>

@@ -1,20 +1,28 @@
 import React from 'react'
-import axios from 'axios'
 import { Text, Accordion, AccordionItem, AccordionHeader, AccordionPanel, AccordionIcon, SimpleGrid, Box, Heading, } from '@chakra-ui/core'
 import WalletContext from '../context/walletContext'
+import { getTxns } from '../providers/wallets'
 
 const Txn = (txn: any) => {
   return (
     <AccordionItem>
       <AccordionHeader bg="white" border="1px" borderColor="grey">
-      <Box flex="1" textAlign="left">
-      ID: {txn.node.id}
-      </Box>
+        <Box flex="1" textAlign="left">
+          ID: {txn.node.id}
+        </Box>
 
         <AccordionIcon />
       </AccordionHeader>
-
       <AccordionPanel border="1px">
+        <SimpleGrid columns={2}>
+          <Text fontSize={10}>Fee: </Text>
+          <Text fontSize={10}>{txn.node.fee.ar} AR</Text>
+          {txn.node.recipient && <React.Fragment><Text fontSize={10}>Recipient: </Text>
+            <Text fontSize={10}>{txn.node.recipient}</Text>
+            <Text fontSize={10}>Amount: </Text>
+            <Text fontSize={10}>{txn.node.quantity.ar} AR</Text></React.Fragment>}
+        </SimpleGrid>
+        <Heading size="xs">Transaction Tags</Heading>
         {txn.node.tags.map((tag: any) => {
           return (<SimpleGrid columns={2}>
             <Text fontSize={10}>{tag.name}</Text>
@@ -32,38 +40,8 @@ const Transactions = () => {
   const [txns, setTxns] = React.useState([])
   console.log(state.address)
   React.useEffect(() => {
-    axios.post('https://arweave.net/graphql', {
-      query: `query {
-                transactions(owners:  ["${state.address}"]) {
-                  edges {
-                    node {
-                      id
-                      owner {
-                        address
-                      }
-                      recipient
-                      tags {
-                        name
-                        value
-                      }
-                      fee {
-                        winston
-                        ar
-                      }
-                      quantity {
-                        winston
-                        ar
-                      }
-                    }
-                  }
-                }
-              }`
-    })
-      .then((res) => {
-        console.log(res.data)
-        setTxns(res.data.data.transactions.edges)
-      })
-      .catch((err) => console.log(err))
+    getTxns(state.address)
+    .then((txns) => setTxns(txns))
   }, [state.address])
 
   return (<Box>

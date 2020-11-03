@@ -74,3 +74,41 @@ export const getTokens = async (address: string): Promise<any[]> => {
     })))
   return tokenBalances
 }
+
+export const getTxns = async (address: string): Promise<any> => {
+  axios.post('https://arweave.net/graphql', {
+      query: `query {
+                transactions(owners:  ["${address}"]) {
+                  edges {
+                    node {
+                      id
+                      owner {
+                        address
+                      }
+                      recipient
+                      tags {
+                        name
+                        value
+                      }
+                      fee {
+                        winston
+                        ar
+                      }
+                      quantity {
+                        winston
+                        ar
+                      }
+                    }
+                  }
+                }
+              }`
+    })
+      .then((res) => {
+        console.log(res.data)
+        return res.data.data.transactions.edges
+      })
+    .catch((err) => {
+      console.log(err)
+      return []
+    })
+}
