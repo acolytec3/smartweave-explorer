@@ -24,9 +24,9 @@ const Txn = (txn: any) => {
         </SimpleGrid>
         <Heading size="xs">Transaction Tags</Heading>
         {txn.node.tags.map((tag: any) => {
-          return (<SimpleGrid columns={2}>
-            <Text fontSize={10}>{tag.name}</Text>
-            <Text fontSize={10}>{tag.value}</Text>
+          return (<SimpleGrid key={txn.node.id+tag.name} columns={2}>
+            <Text fontSize={10} key={tag.toString()}>{tag.name}</Text>
+            <Text fontSize={10} key={tag.name+tag.value}>{tag.value}</Text>
           </SimpleGrid>
           )
         })}
@@ -38,10 +38,14 @@ const Txn = (txn: any) => {
 const Transactions = () => {
   const { state } = React.useContext(WalletContext)
   const [txns, setTxns] = React.useState([])
-  console.log(state.address)
+
   React.useEffect(() => {
-    getTxns(state.address)
-    .then((txns) => setTxns(txns))
+    if (state.address !== '') {
+      getTxns(state.address)
+    .then((txns) => { console.log(txns)
+      setTxns(txns)})
+    }
+    else setTxns([])
   }, [state.address])
 
   return (<Box>

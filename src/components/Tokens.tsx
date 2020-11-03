@@ -6,6 +6,7 @@ const Tokens = () => {
     const { state } = React.useContext(WalletContext)
     return (<Box>
         <Heading size="sm">Wallet Balances</Heading>
+        <Text>Address: {state.address}</Text>
         <SimpleGrid columns={2}>
             <Text borderBottom="1px" fontWeight="bold">Ticker</Text>
             <Text borderBottom="1px" fontWeight="bold">Balance</Text>
