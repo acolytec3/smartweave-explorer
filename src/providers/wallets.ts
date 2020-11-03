@@ -1,3 +1,4 @@
+//@ts-nocheck
 import Arweave from 'arweave'
 import axios from 'axios'
 import { readContract } from 'smartweave'
@@ -43,12 +44,34 @@ export const getTokens = async (address: string): Promise<any[]> => {
   }`
   })
   let tokens = res.data.data.transactions.edges
-  let contracts = tokens.map((node: any) => node.node.tags.filter((tag: { name: string, value: string }) => tag.name == "Token")[0].value)
-  console.log(contracts)
+  let vertoContracts = [...new Set(tokens.map((node: any) => node.node.tags.filter((tag: { name: string, value: string }) => tag.name == "Token")[0].value))]
+  res = await ax.post('https://arweave.net:443/graphql',{query:`query {
+      transactions(first:20,
+        	owners:["${address}"]
+          tags: [{
+              name: "App-Name",
+            values:["SmartWeaveAction"]
+          }]
+      ) {
+          edges {
+              node {
+                  id
+                  tags {
+                    name
+                    value
+                  }
+              }
+          }
+      }
+  }`})
+  console.log('Verto contract interactions', vertoContracts)
+  let smartweaveContracts = [...new Set(res.data.data.transactions.edges.map((edge) => edge.node.tags.filter((tag) => (tag.name == 'Contract'))[0].value))]
+  console.log('Generic Smartweave contract interactions', smartweaveContracts)
+  let contracts = vertoContracts.concat(smartweaveContracts)
   let tokenBalances = await Promise.all(contracts.map((contract: any) =>
     readContract(arweave, contract).then(contractState => {
-      return { 'balance': contractState.balances['bLkyTRJCYg8WxBKrjBwAaRe1H7HYDfXzl7YKCENvw-Q'], 'ticker': contractState.ticker }
+      if (contractState.balances)
+      return { 'balance': contractState.balances[address], 'ticker': contractState.ticker }
     })))
-
   return tokenBalances
 }
