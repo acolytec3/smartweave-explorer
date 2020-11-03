@@ -1,6 +1,6 @@
 import React from 'react';
 import Dropzone from 'react-dropzone'
-import { Box, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
+import { Box, Button, Input, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
 import { get, set} from 'idb-keyval'
 import { addWallet, getTokens } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
@@ -9,6 +9,7 @@ const WalletLoader = (props :any) => {
   const toast = useToast()
   const { state, dispatch } = React.useContext(WalletContext)
   const [loading, setLoading] = React.useState(false)
+  const [address, setAddress] = React.useState('')
   React.useEffect(() => {
     const loadWallet = async (data: string) => {
       let wallet = JSON.parse(data)
@@ -78,10 +79,20 @@ const WalletLoader = (props :any) => {
     }
   }
 
+  const addAddress = async () =>
+  {
+    setLoading(true)
+    let walletDeets = await addWallet(address);
+    let tokens = await getTokens(address);
+    await set('wallet', address)
+    props.onClose();
+    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '', tokens: tokens } })
+  }
+
   return (<Stack align="center">
     {loading ? <Spinner /> :
-     <Box w="100%" borderStyle='dashed' borderWidth="2px">
-      <Dropzone onDrop={onDrop} >
+    <Box w="100%" borderStyle='dashed' borderWidth="2px">
+      <Dropzone onDrop={onDrop}>
         {({ getRootProps, getInputProps }) => (
           <section>
             <div {...getRootProps()}>
@@ -90,8 +101,13 @@ const WalletLoader = (props :any) => {
             </div>
           </section>
         )}
-      </Dropzone>
-    </Box>}
+      </Dropzone> 
+    </Box>
+    }
+    {!loading && <Stack>
+      <Input w="93%" placeholder="Wallet address" onBlur={(evt: React.ChangeEvent<HTMLInputElement>) => {setAddress(evt.target.value)}} />
+      <Button onClick={() => addAddress()}>Track Address</Button>
+      </Stack>}
     </Stack>
   )
 }

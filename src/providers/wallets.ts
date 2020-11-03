@@ -7,7 +7,9 @@ export const addWallet = async (wallet: any): Promise<{ address: string, balance
     host: 'arweave.net',
     port: 443,
   })
-  let address = await arweave.wallets.jwkToAddress(wallet)
+  let address = ''
+  if (typeof wallet === "string") address = wallet;
+  else address = await arweave.wallets.jwkToAddress(wallet)
   let balance = arweave.ar.winstonToAr(await arweave.wallets.getBalance(address))
   console.log(address);
   console.log(balance);

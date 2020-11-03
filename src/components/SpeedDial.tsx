@@ -5,7 +5,7 @@ import { Stack, IconButton, Text } from '@chakra-ui/core'
 import { del } from 'idb-keyval'
 import WalletContext from '../context/walletContext'
 
-const SpeedDial= (props : any)=> {
+const SpeedDial = (props : any)=> {
   const [isOpen, setIsOpen] = React.useState(false);
   const wrapperRef = React.useRef(null);
   
@@ -26,7 +26,10 @@ const SpeedDial= (props : any)=> {
             dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
           }
           //@ts-ignore
-          else props.onOpen()
+          else {
+            props.onOpen()
+          }
+          setIsOpen(false)
         }} />
       </Stack>
     )
