@@ -7,7 +7,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton, useDisclosure
+  ModalCloseButton, useDisclosure, Heading
 } from '@chakra-ui/core'
 import WalletLoader from './components/WalletLoader'
 import WalletContext, { initWalletState } from './context/walletContext'
@@ -43,25 +43,22 @@ function App() {
     <WalletContext.Provider value={{ dispatch, state }}>
       <ThemeProvider theme={theme}>
         <Stack w="100%" align="center" >
-          <Stack isInline>
-            <Text>Armob V2</Text>
-            {state.balance !== '' && <Text justifySelf="end">Balance: {parseFloat(state.balance).toFixed(4).toLocaleString()} AR</Text>}</Stack>
+            <Heading>ArMob 2.0</Heading>
           <Tabs isFitted align="center">
             <TabPanels>
               <TabPanel>
                 {state.address !== '' &&
                   <Box>
                     {state.tokens && state.tokens.length > 0 && <Tokens />}
-                    <Transactions />
                   </Box>}
               </TabPanel>
               <TabPanel>
-                <Text>Browser</Text>
+                <Transactions />
               </TabPanel>
             </TabPanels>
             <TabList position="fixed" bottom="0px" left="0px" w="100vw">
               <Tab>Wallet</Tab>
-              <Tab>Browser</Tab>
+              <Tab>Transactions</Tab>
             </TabList>
           </Tabs>
         </Stack>

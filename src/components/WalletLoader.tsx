@@ -10,7 +10,8 @@ const WalletLoader = (props :any) => {
   const { state, dispatch } = React.useContext(WalletContext)
   const [loading, setLoading] = React.useState(false)
   const [address, setAddress] = React.useState('')
-  React.useEffect(() => {
+
+ /* React.useEffect(() => {
     const loadWallet = async (data: string) => {
       let wallet = JSON.parse(data)
       console.log(JSON.parse(data))
@@ -24,7 +25,7 @@ const WalletLoader = (props :any) => {
       }
       catch (err) { console.log('Error loading wallet', err)}
     }})
-  },[])
+  },[])*/
 
   const onDrop = async (acceptedFiles: any) => {
     const reader = new FileReader()
@@ -105,7 +106,7 @@ const WalletLoader = (props :any) => {
     </Box>
     }
     {!loading && <Stack w="100%">
-      <Input w="93%%" placeholder="Wallet address" onBlur={(evt: React.ChangeEvent<HTMLInputElement>) => {setAddress(evt.target.value)}} />
+      <Input w="93%%" placeholder="Wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {setAddress(evt.target.value)}} />
       <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
       </Stack>}
     </Stack>

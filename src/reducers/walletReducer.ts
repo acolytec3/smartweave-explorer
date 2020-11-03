@@ -1,4 +1,3 @@
-import Wallets from 'arweave/node/wallets';
 import { walletState, wallet } from '../context/walletContext';
 
 const walletReducer = (state: walletState, action: { type: string, payload: any }): walletState => {
