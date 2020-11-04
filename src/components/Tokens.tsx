@@ -16,13 +16,10 @@ const AddToken = () => {
     const update = async () => {
         setLoading(true)
         let tokens = [...state.tokens]
-        if (tokens.filter((token) => token.contract === address).length === 0) {
-            tokens.push({ contract: address, balance: 0, ticker: '' })
-            let updatedTokens = await updateTokens(tokens, state.address)
-            console.log(updatedTokens)
-            dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: updatedTokens } })
-            setAddress('')
-        }
+        tokens.push({ contract: address, balance: 0, ticker: '' })
+        let updatedTokens = await updateTokens(tokens, state.address)
+        dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: updatedTokens } })
+        setAddress('')
         setLoading(false)
     }
 
@@ -39,7 +36,7 @@ const AddToken = () => {
                 <Stack isInline >
                     <Input placeholder="Contract ID" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }}
                         onBlur={() => validateToken()} />
-                    <Button isDisabled={loading} onClick={() => update()}>Add Token</Button>
+                    <Button isDisabled={loading || !valid || address === ''} onClick={() => update()}>Add Token</Button>
                     {loading && <Spinner />}
                 </Stack>
                 <FormErrorMessage>Token already loaded</FormErrorMessage>

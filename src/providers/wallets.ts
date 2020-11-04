@@ -161,7 +161,7 @@ export const sendTokens = async (contract: string, amount: number, target: strin
       function: 'transfer'
     })
     console.log('Dry-run result is:',res)
-   /* if (res.type === 'ok') {
+    if (res.type === 'ok') {
      let txId = await interactWrite(arweave, key, contract, {
       target: target,
       qty: amount,
@@ -169,7 +169,7 @@ export const sendTokens = async (contract: string, amount: number, target: strin
     })
     console.log(res)
     return txId
-  }*/
+  }
     return "success!"
   }
   catch (err) {
