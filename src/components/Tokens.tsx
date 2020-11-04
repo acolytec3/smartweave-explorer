@@ -1,6 +1,6 @@
 import React from 'react'
 import WalletContext, { tokenBalance } from '../context/walletContext'
-import { Box, Button, Heading, SimpleGrid, Text, Popover, PopoverTrigger, Input, PopoverArrow, PopoverBody, PopoverContent, PopoverCloseButton, PopoverHeader, useToast, PseudoBox, Spinner, Stack } from '@chakra-ui/core'
+import { Box, Button, Heading, SimpleGrid, Text, Popover, PopoverTrigger, Input, PopoverArrow, PopoverBody, PopoverContent, PopoverCloseButton, PopoverHeader, useToast, PseudoBox, Spinner, Stack, Divider } from '@chakra-ui/core'
 import TransferModal from './TransactionModal'
 import { sendTokens, getFee } from '../providers/wallets'
 
@@ -34,9 +34,11 @@ const Tokens = () => {
         <Heading size="sm">Wallet Balances</Heading>
         <Text>Address: {state.address}</Text>
         <SimpleGrid columns={3}>
-            <Text borderBottom="1px" fontWeight="bold">Ticker</Text>
-            <Text borderBottom="1px" fontWeight="bold">Balance</Text>
-            <span></span>
+            <Text fontWeight="bold">Ticker</Text>
+            <Text fontWeight="bold">Balance</Text>
+        </SimpleGrid>
+        <Divider />
+        <SimpleGrid columns={3}>
             <Text>AR</Text>
             <Text>{state.balance}</Text>
             <Button onClick={() => openModal(true)}>Send AR</Button>
@@ -59,10 +61,16 @@ const Tokens = () => {
                                     <PopoverBody>
                                         <Stack align="center">
                                             {!loading ?
-                                                <Box><Input w="90%" placeholder={`Amount`} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAmount(parseFloat(evt.target.value)) }} />
-                                                    <Input w="90%" placeholder={`Address`} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setTo(evt.target.value) }} />
+                                                <Box>
+                                                    <Input
+                                                        w="90%"
+                                                        placeholder={`Amount`}
+                                                        onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAmount(parseFloat(evt.target.value)) }}
+                                                    />
+                                                    <Input
+                                                        w="90%" placeholder={`Address`} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setTo(evt.target.value) }} />
                                                     <Text textAlign="center">Fee: {fee}</Text>
-                                                    <Button w="90%"onClick={() => {
+                                                    <Button w="90%" onClick={() => {
                                                         initTokenTransfer(token, onClose);
                                                     }}>Submit Transaction</Button>
                                                 </Box>
