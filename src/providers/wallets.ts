@@ -1,7 +1,7 @@
 import Arweave from 'arweave'
 import axios from 'axios'
 import { readContract, interactWriteDryRun, interactWrite, interactRead } from 'smartweave'
-
+import { tokenBalance } from '../context/walletContext'
 export const addWallet = async (wallet: any): Promise<{ address: string, balance: string }> => {
   let arweave = Arweave.init({
     host: 'arweave.net',
@@ -176,4 +176,19 @@ export const sendTokens = async (contract: string, amount: number, target: strin
     console.log(err)
     return (err.toString())
   }
+}
+
+export const updateTokens = async (tokens: tokenBalance[], address: string): Promise<tokenBalance[] | {}> => {
+  let arweave = Arweave.init({
+    host: 'arweave.net',
+    port: 443,
+  })
+  let tokenBalances = await Promise.all(tokens.map((token: tokenBalance) =>
+    readContract(arweave, token.contract).then(contractState => {
+      console.log(contractState)
+      if (contractState.balances)
+      return { 'balance': contractState.balances[address] as number, 'ticker': contractState.ticker as string, 'contract': token.contract }
+      else return []
+    })))
+  return tokenBalances
 }

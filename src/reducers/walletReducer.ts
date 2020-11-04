@@ -17,6 +17,12 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
             tokens: action.payload.tokens,
             wallets: wallets
         }};
+        case 'UPDATE_TOKENS': {
+            return {
+                ...state,
+                tokens: action.payload.tokens
+            }
+        }
         default: return state
     }
 }
