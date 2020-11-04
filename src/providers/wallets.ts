@@ -1,6 +1,6 @@
 import Arweave from 'arweave'
 import axios from 'axios'
-import { readContract } from 'smartweave'
+import { readContract, interactWriteDryRun, interactWrite, interactRead } from 'smartweave'
 
 export const addWallet = async (wallet: any): Promise<{ address: string, balance: string }> => {
   let arweave = Arweave.init({
@@ -13,6 +13,7 @@ export const addWallet = async (wallet: any): Promise<{ address: string, balance
   let balance = arweave.ar.winstonToAr(await arweave.wallets.getBalance(address))
   console.log(address);
   console.log(balance);
+
   return { address, balance }
 }
 
@@ -21,6 +22,7 @@ export const getTokens = async (address: string): Promise<any[]> => {
     host: 'arweave.net',
     port: 443,
   })
+  
   let res = await axios.post('https://arweave.net/graphql', {
     query: `query {
       transactions(first:20,
@@ -69,14 +71,15 @@ export const getTokens = async (address: string): Promise<any[]> => {
   let contracts = [...new Set(vertoContracts.concat(smartweaveContracts))]
   let tokenBalances = await Promise.all(contracts.map((contract: any) =>
     readContract(arweave, contract).then(contractState => {
+      console.log(contractState)
       if (contractState.balances)
-      return { 'balance': contractState.balances[address], 'ticker': contractState.ticker }
+      return { 'balance': contractState.balances[address], 'ticker': contractState.ticker, 'contract': contract }
     })))
   return tokenBalances
 }
 
 export const getTxns = async (address: string): Promise<any> => {
-  axios.post('https://arweave.net/graphql', {
+  return axios.post('https://arweave.net/graphql', {
       query: `query {
                 transactions(owners:  ["${address}"]) {
                   edges {
@@ -111,4 +114,66 @@ export const getTxns = async (address: string): Promise<any> => {
       console.log(err)
       return []
     })
+}
+
+export const getFee = async (size: number): Promise<string> => {
+  let res = await axios.get(`https://arweave.net:443/price/${size}`)
+  let arweave = Arweave.init({
+    host: 'arweave.net',
+    port: 443,
+  })
+  return arweave.ar.winstonToAr(res.data)
+}
+
+export const sendTransfer = async (transfer: any, key: any): Promise<string> => {
+  try {
+    let arweave = Arweave.init({
+      host: 'arweave.net',
+      port: 443,
+    })
+    let transaction = await arweave.createTransaction({
+      target: transfer.to,
+      quantity: arweave.ar.arToWinston(transfer.amount)
+    }, key);
+
+    transaction.addTag('App-Name', 'ArMob 2.0')
+    await arweave.transactions.sign(transaction, key);
+
+    const response = await arweave.transactions.post(transaction);
+    console.log(response);
+  }
+  catch (err) {
+    console.log(`Error sending tranfer - ${err}`)
+    return `Error submitting transaction - ${err}`
+  }
+  return 'Transaction submitted successfully'
+}
+
+export const sendTokens = async (contract: string, amount: number, target: string, key: any): Promise<string | boolean> => {
+  try {
+    let arweave = Arweave.init({
+      host: 'arweave.net',
+      port: 443,
+    })
+    let res = await interactWriteDryRun(arweave, key, contract, {
+      target: target,
+      qty: amount,
+      function: 'transfer'
+    })
+    console.log('Dry-run result is:',res)
+   /* if (res.type === 'ok') {
+     let txId = await interactWrite(arweave, key, contract, {
+      target: target,
+      qty: amount,
+      function: 'transfer'
+    })
+    console.log(res)
+    return txId
+  }*/
+    return "success!"
+  }
+  catch (err) {
+    console.log(err)
+    return (err.toString())
+  }
 }

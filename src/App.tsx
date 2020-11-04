@@ -49,7 +49,7 @@ function App() {
               <TabPanel>
                 {state.address !== '' &&
                   <Box>
-                    {state.tokens && state.tokens.length > 0 && <Tokens />}
+                    <Tokens />
                   </Box>}
               </TabPanel>
               <TabPanel>
