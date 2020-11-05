@@ -1,26 +1,38 @@
 import React from 'react'
 import WalletContext, { tokenBalance } from '../context/walletContext'
-import {
+import { 
     Box, Button, Heading, SimpleGrid, Text, Popover, PopoverTrigger, Input, PopoverArrow, PopoverBody, PopoverContent, PopoverCloseButton, PopoverHeader, useToast, FormControl,
        FormErrorMessage, Spinner, Stack, Divider
 } from '@chakra-ui/core'
 import TransferModal from './TransactionModal'
 import { sendTokens, getFee, updateTokens } from '../providers/wallets'
 
-const AddToken = () => {
+const AddToken = (props: any) => {
     const { state, dispatch } = React.useContext(WalletContext)
     const [address, setAddress] = React.useState('')
     const [loading, setLoading] = React.useState(false)
     const [valid, setValid] = React.useState(true)
+    const toast = useToast()
 
     const update = async () => {
         setLoading(true)
+        console.log(props)
         let tokens = [...state.tokens]
         tokens.push({ contract: address, balance: 0, ticker: '' })
         let updatedTokens = await updateTokens(tokens, state.address)
+        if (updatedTokens) {
         dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: updatedTokens } })
+        }
+        else toast({
+            title: 'Error updating balances',
+            status: 'error',
+            duration: 3000,
+            position: 'bottom',
+            description: 'Please check contract ID and try again'
+        })
         setAddress('')
         setLoading(false)
+        props.props()
     }
 
     const validateToken = () => {
@@ -41,8 +53,6 @@ const AddToken = () => {
                 </Stack>
                 <FormErrorMessage>Token already loaded</FormErrorMessage>
             </FormControl>
-
-
         </Stack>
     )
 }
@@ -72,7 +82,7 @@ const Tokens = () => {
             position: 'bottom'
         })
     }
-    return (<Box>
+    return (<Box textAlign="left">
         <Heading size="sm">Wallet Balances</Heading>
         <Text>Address: {state.address}</Text>
         <SimpleGrid columns={3}>
@@ -82,8 +92,8 @@ const Tokens = () => {
         <Divider />
         <SimpleGrid columns={3}>
             <Text>AR</Text>
-            <Text>{state.balance}</Text>
-            <Button isDisabled={!state.key} onClick={() => openModal(true)}>Send AR</Button>
+            <Text>{parseFloat(state.balance).toLocaleString(undefined,{maximumFractionDigits: 6})}</Text>
+            <Button isDisabled={!state.key} onClick={() => openModal(true)}>Send</Button>
         </SimpleGrid>
         {state.tokens?.map((token: tokenBalance) => {
             return (
@@ -94,7 +104,7 @@ const Tokens = () => {
                         {({ onClose }) =>
                             <>
                                 <PopoverTrigger>
-                                    <Button >Send {token.ticker}</Button>
+                                    <Button >Send</Button>
                                 </PopoverTrigger>
                                 <PopoverContent zIndex={4}>
                                     <PopoverArrow />
@@ -131,9 +141,20 @@ const Tokens = () => {
         })
         }
         <TransferModal props={{ modal, closeModal }} />
-        <Box position="fixed" bottom="10%">
-            <AddToken />
-        </Box>
+        <Popover placement="top-end">
+        {({ onClose }) => (
+        <>
+            <PopoverTrigger>
+                <Button position="fixed" bottom="50px" left="20px">Add Custom Token</Button>
+            </PopoverTrigger>
+            <PopoverContent>
+                <PopoverCloseButton />
+                <PopoverBody>
+                    <AddToken props={onClose}/>
+                </PopoverBody>
+            </PopoverContent>
+            </> )}
+        </Popover>
     </Box>
     )
 }

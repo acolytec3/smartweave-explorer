@@ -178,17 +178,23 @@ export const sendTokens = async (contract: string, amount: number, target: strin
   }
 }
 
-export const updateTokens = async (tokens: tokenBalance[], address: string): Promise<tokenBalance[] | {}> => {
+export const updateTokens = async (tokens: tokenBalance[], address: string): Promise<tokenBalance[] | false> => {
   let arweave = Arweave.init({
     host: 'arweave.net',
     port: 443,
   })
+  try {
   let tokenBalances = await Promise.all(tokens.map((token: tokenBalance) =>
     readContract(arweave, token.contract).then(contractState => {
       console.log(contractState)
       if (contractState.balances)
       return { 'balance': contractState.balances[address] as number, 'ticker': contractState.ticker as string, 'contract': token.contract }
-      else return []
+      else return {'balance':0, 'ticker':'', 'contract':token.contract}
     })))
   return tokenBalances
+  }
+  catch (err) {
+    console.log('Error updating tokens', err)
+    return false
+  }
 }

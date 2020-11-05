@@ -20,7 +20,7 @@ const SpeedDial = (props : any)=> {
         right="0px"
         align="center">
         <Text fontSize={11}>{state.address === '' ? "Open Wallet" : "Close Wallet"}</Text>
-        <IconButton aria-label="wallet" icon={FaWallet} isRound onClick={async () => {
+        <IconButton aria-label="wallet" icon={<FaWallet />} isRound onClick={async () => {
           if (state.address !== '') {
             await del('wallet');
             dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
@@ -49,8 +49,8 @@ const SpeedDial = (props : any)=> {
   }
   useOutsideAlerter(wrapperRef);
 
-  return (<div ref={wrapperRef} style={{position: "fixed", bottom: "20px", right:"20px"}}>
-    <IconButton aria-label="open" isRound icon={isOpen ? FaMinus : FaPlus}  onClick={() => setIsOpen(!isOpen)} />
+  return (<div ref={wrapperRef} style={{position: "fixed", bottom: "50px", right:"20px"}}>
+    <IconButton aria-label="open" isRound icon={isOpen ? <FaMinus />: <FaPlus />}  onClick={() => setIsOpen(!isOpen)} />
     <AnimatePresence>
       {isOpen &&
         <motion.div

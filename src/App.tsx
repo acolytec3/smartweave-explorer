@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  theme, Tabs, TabList, TabPanels, Tab, TabPanel, Text, ThemeProvider, Stack, Box,
+  theme, Tabs, TabList, TabPanels, Tab, TabPanel, ChakraProvider, Stack, Box,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -41,10 +41,10 @@ function App() {
 
   return (
     <WalletContext.Provider value={{ dispatch, state }}>
-      <ThemeProvider theme={theme}>
+      <ChakraProvider theme={theme}>
         <Stack w="100%" align="center" >
             <Heading>ArMob 2.0</Heading>
-          <Tabs isFitted align="center">
+          <Tabs isFitted align="center" variant="enclosed-colored">
             <TabPanels w="90vw">
               <TabPanel>
                 {state.address !== '' &&
@@ -65,7 +65,7 @@ function App() {
         {/* @ts-ignore 8*/}
         <SpeedDial onOpen={onOpen} />
         <WalletModal />
-      </ThemeProvider>
+      </ChakraProvider>
     </WalletContext.Provider>
   );
 }
