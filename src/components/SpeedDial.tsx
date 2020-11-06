@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPlus, FaMinus, FaWallet, } from 'react-icons/fa'
+import { FaPlus, FaMinus} from 'react-icons/fa'
 import { Stack, IconButton, Text } from '@chakra-ui/core'
 
 interface SpeedDialItemProps {
