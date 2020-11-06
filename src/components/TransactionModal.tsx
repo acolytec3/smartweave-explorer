@@ -23,10 +23,6 @@ const TransferModal = (props: any) => {
     const [validAmount, setValid] = useState(true)
     const toast = useToast()
 
-    useEffect(() => {
-        setOpen(props.props.modal)  
-        updateFee()  
-    },[props])
 
     const updateFee = () => {
         getFee(0).then(cost => setFee(cost))
@@ -38,6 +34,11 @@ const TransferModal = (props: any) => {
                 description: 'Error getting fee, check your network connection and try again'
             }))
     }
+
+    useEffect(() => {
+        setOpen(props.props.modal)
+        updateFee()
+    }, [])
 
     const initiateTransfer = async () => {
         let transferDeets = {
@@ -51,20 +52,21 @@ const TransferModal = (props: any) => {
     }
 
     const validateAmount = () => {
-        amount === '' ? 
-            setValid(true) : 
+        amount === '' ?
+            setValid(true) :
             setValid(parseFloat((parseFloat(state.balance) - parseFloat(fee) - parseFloat(amount)).toFixed(12)) >= 0)
     }
 
     const setMax = async () => {
         let balance = parseFloat(state.balance)
-        let amount = balance - parseFloat(fee)       
+        let amount = balance - parseFloat(fee)
         setAmount(amount.toString())
     }
 
     return (<Modal closeOnOverlayClick={false} isCentered isOpen={isOpen} onClose={() => {
         setOpen(false)
-        props.props.closeModal()}}>
+        props.props.closeModal()
+    }}>
         <ModalOverlay />
         <ModalContent>
             <ModalHeader>Send AR</ModalHeader>
@@ -80,29 +82,29 @@ const TransferModal = (props: any) => {
                             <FormControl isInvalid={to === state.address}>
                                 <Input placeholder="Send to Arweave wallet address"
                                     value={to}
-                                    onChange={(e: any) => setToAddress(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToAddress(e.target.value)}
                                     onBlur={updateFee}
                                     isInvalid={to === state.address} />
                                 <FormErrorMessage>Recipient address cannot be the same as the sending address</FormErrorMessage>
                             </FormControl>
 
-                                <FormControl isInvalid={!validAmount}>
-                                    <InputGroup>
-                                        <Input
-                                            placeholder="Amount"
-                                            value={amount}
-                                            onChange={(e: any) => setAmount(e.target.value)}
-                                            onBlur={() => validateAmount()}
-                                            isInvalid={!validAmount}
-                                        />
-                                        <InputRightElement children='AR' />
-                                    </InputGroup>
-                                    <FormErrorMessage>Amount cannot be greater than wallet balance</FormErrorMessage>
-                                </FormControl>
-                                <Button border="none" onClick={setMax}>Use Wallet Balance</Button>
+                            <FormControl isInvalid={!validAmount}>
+                                <InputGroup>
+                                    <Input
+                                        placeholder="Amount"
+                                        value={amount}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmount(e.target.value)}
+                                        onBlur={() => validateAmount()}
+                                        isInvalid={!validAmount}
+                                    />
+                                    <InputRightElement children='AR' />
+                                </InputGroup>
+                                <FormErrorMessage>Amount cannot be greater than wallet balance</FormErrorMessage>
+                            </FormControl>
+                            <Button border="none" onClick={setMax}>Use Wallet Balance</Button>
 
-                            <Text>Fee: {fee} AR</Text>                          
-                            <Text>Total (including fee): {(parseFloat(fee) + parseFloat(amount ? amount : '0')).toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: (fee != '0') ? fee.split('.')[1].length : 1 })} AR</Text>
+                            <Text>Fee: {fee} AR</Text>
+                            <Text>Total (including fee): {(parseFloat(fee) + parseFloat(amount ? amount : '0')).toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: (fee !== '0') ? fee.split('.')[1].length : 1 })} AR</Text>
                         </Stack>
                     </Fragment>}
                     {next && <Fragment>
@@ -123,7 +125,7 @@ const TransferModal = (props: any) => {
                             </Stack>
                             <Stack>
                                 <Text>Total</Text>
-                                <Text>{(parseFloat(fee) + parseFloat(amount ? amount : '0')).toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: (fee != '0') ? fee.split('.')[1].length : 1 })} AR</Text>
+                                <Text>{(parseFloat(fee) + parseFloat(amount ? amount : '0')).toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: (fee !== '0') ? fee.split('.')[1].length : 1 })} AR</Text>
                             </Stack>
                             <Stack>
                                 <Text>Balance after transaction</Text>

@@ -7,7 +7,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton, useDisclosure, Heading, Portal, PortalManager
+  ModalCloseButton, useDisclosure, Heading, Portal, PortalManager, Button
 } from '@chakra-ui/core'
 import WalletLoader from './components/WalletLoader'
 import WalletContext, { initWalletState } from './context/walletContext'
@@ -15,12 +15,28 @@ import walletReducer from './reducers/walletReducer'
 import Transactions from './components/Transactions';
 import SpeedDial from './components/SpeedDial'
 import Tokens from './components/Tokens';
-
+import { get} from 'idb-keyval'
+import { addWallet } from './providers/wallets'
 
 function App() {
   const [state, dispatch] = React.useReducer(walletReducer, initWalletState)
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  React.useEffect(() => {
+    const loadWallet = async (data: string) => {
+      let wallet = JSON.parse(data)
+      console.log(JSON.parse(data))
+      let walletDeets = await addWallet(wallet)
+      dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: wallet } })
+    }
+    get('wallet').then((data : any) => {
+    if (data) {
+      try{
+      loadWallet(data)
+      }
+      catch (err) { console.log('Error loading wallet', err)}
+    }})
+  },[])
 
   const WalletModal = () => {
     return (<Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -47,13 +63,20 @@ function App() {
           <Tabs isFitted align="center" variant="enclosed-colored">
             <TabPanels w="90vw">
               <TabPanel>
-                {state.address !== '' &&
+                {state.address !== '' ?
                   <Box>
                     <Tokens />
-                  </Box>}
+                  </Box>
+                  :
+                 <Button onClick={onOpen}>Open Wallet</Button>
+                  }
               </TabPanel>
               <TabPanel>
+              {state.address !== '' ?
                 <Transactions />
+                :
+                <Button onClick={onOpen}>Open Wallet</Button>
+                 }
               </TabPanel>
             </TabPanels>
             <TabList position="fixed" bottom="0px" left="0px" w="100vw">

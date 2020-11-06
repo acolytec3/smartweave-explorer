@@ -1,39 +1,34 @@
 import React from 'react';
-import { FaPlus, FaMinus, FaWallet } from 'react-icons/fa'
+import { FaPlus, FaMinus, FaWallet, } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Stack, IconButton, Text } from '@chakra-ui/core'
 import { del } from 'idb-keyval'
 import WalletContext from '../context/walletContext'
 
+interface SpeedDialItemProps {
+  icon: any, //Must pass an iconType object
+  label: string
+  clickHandler: () => void
+}
+
+const SpeedDialItem:React.FC<SpeedDialItemProps> = ({ icon, label, clickHandler }:SpeedDialItemProps) => {
+  return (
+    <Stack isInline
+      position="fixed"
+      bottom="100px"
+      right="20px"
+      align="center">
+      <Text fontSize={11}>{label}</Text>
+      <IconButton aria-label="wallet" icon={icon} isRound onClick={async () => clickHandler()} />
+    </Stack>
+  )
+}
+
 const SpeedDial = (props : any)=> {
   const [isOpen, setIsOpen] = React.useState(false);
   const wrapperRef = React.useRef(null);
   
-  const SpeedDialItem = () => {
-    const { state, dispatch } = React.useContext(WalletContext)
-  
-    return (
-      <Stack isInline
-        key="me"
-        position="fixed"
-        bottom="100px"
-        right="20px"
-        align="center">
-        <Text key="cheeser" fontSize={11}>{state.address === '' ? "Open Wallet" : "Close Wallet"}</Text>
-        <IconButton key="walletIcon" aria-label="wallet" icon={<FaWallet />} isRound onClick={async () => {
-          if (state.address !== '') {
-            await del('wallet');
-            dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
-          }
-          //@ts-ignore
-          else {
-            props.onOpen()
-          }
-          setIsOpen(false)
-        }} />
-      </Stack>
-    )
-  }
+
   const useOutsideAlerter = (ref: any) => {
     React.useEffect(() => {
       function handleClickOutside(event: MouseEvent) {
@@ -52,8 +47,7 @@ const SpeedDial = (props : any)=> {
   return (<div ref={wrapperRef} style={{position: "fixed", bottom: "50px", right:"20px"}}>
    <IconButton aria-label="open" isRound icon={isOpen ? <FaMinus />: <FaPlus />}  onClick={(evt: React.MouseEvent) => {console.log(evt);setIsOpen(!isOpen)}} />
       {isOpen &&
-
-       <SpeedDialItem key="1234" />}
+       <SpeedDialItem icon={<FaWallet />} label="Open Wallet" clickHandler={() => {}}/>}
 
   </div>)
 }

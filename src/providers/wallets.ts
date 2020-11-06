@@ -1,6 +1,6 @@
 import Arweave from 'arweave'
 import axios from 'axios'
-import { readContract, interactWriteDryRun, interactWrite, interactRead } from 'smartweave'
+import { readContract, interactWriteDryRun, interactWrite } from 'smartweave'
 import { tokenBalance } from '../context/walletContext'
 export const addWallet = async (wallet: any): Promise<{ address: string, balance: string }> => {
   let arweave = Arweave.init({

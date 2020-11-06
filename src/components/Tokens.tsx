@@ -18,7 +18,7 @@ const AddToken = (props: any) => {
         setLoading(true)
         console.log(props)
         let tokens = [...state.tokens]
-        tokens.push({ contract: address, balance: 0, ticker: '' })
+        tokens.push({ contract: address, balance: 0, ticker: '', contractState: '' })
         let updatedTokens = await updateTokens(tokens, state.address)
         if (updatedTokens) {
         dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: updatedTokens } })

@@ -3,7 +3,8 @@ import { createContext } from 'react'
 export type tokenBalance = {
     ticker: string,
     balance: number,
-    contract: string
+    contract: string,
+    contractState: any
 }
 
 export type wallet = {
