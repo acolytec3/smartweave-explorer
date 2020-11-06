@@ -78,14 +78,14 @@ const TransferModal = (props: any) => {
                     {!next && <Fragment>
                         <Stack spacing={2}>
                             <FormControl isInvalid={to === state.address}>
-                                <Input w="90%" placeholder="Send to Arweave wallet address"
+                                <Input placeholder="Send to Arweave wallet address"
                                     value={to}
                                     onChange={(e: any) => setToAddress(e.target.value)}
                                     onBlur={updateFee}
                                     isInvalid={to === state.address} />
                                 <FormErrorMessage>Recipient address cannot be the same as the sending address</FormErrorMessage>
                             </FormControl>
-                            <Stack isInline>
+
                                 <FormControl isInvalid={!validAmount}>
                                     <InputGroup>
                                         <Input
@@ -100,11 +100,9 @@ const TransferModal = (props: any) => {
                                     <FormErrorMessage>Amount cannot be greater than wallet balance</FormErrorMessage>
                                 </FormControl>
                                 <Button border="none" onClick={setMax}>Use Wallet Balance</Button>
-                            </Stack>
-                            <Text>Fee</Text>
-                            <Text fontSize={14}>{fee} AR</Text>
-                            <Text>Total (including fee)</Text>
-                            <Text fontSize={14}>{(parseFloat(fee) + parseFloat(amount ? amount : '0')).toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: (fee != '0') ? fee.split('.')[1].length : 1 })} AR</Text>
+
+                            <Text>Fee: {fee} AR</Text>                          
+                            <Text>Total (including fee): {(parseFloat(fee) + parseFloat(amount ? amount : '0')).toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: (fee != '0') ? fee.split('.')[1].length : 1 })} AR</Text>
                         </Stack>
                     </Fragment>}
                     {next && <Fragment>

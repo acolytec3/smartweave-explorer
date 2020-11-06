@@ -83,21 +83,20 @@ const Tokens = () => {
         })
     }
     return (<Box textAlign="left">
-        <Heading size="sm">Wallet Balances</Heading>
-        <Text>Address: {state.address}</Text>
+        <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">Address: {state.address}</Text>
         <SimpleGrid columns={3}>
             <Text fontWeight="bold">Ticker</Text>
             <Text fontWeight="bold">Balance</Text>
         </SimpleGrid>
         <Divider />
-        <SimpleGrid columns={3}>
+        <SimpleGrid columns={3} my={2}>
             <Text>AR</Text>
             <Text>{parseFloat(state.balance).toLocaleString(undefined,{maximumFractionDigits: 6})}</Text>
             <Button isDisabled={!state.key} onClick={() => openModal(true)}>Send</Button>
         </SimpleGrid>
         {state.tokens?.map((token: tokenBalance) => {
             return (
-                <SimpleGrid columns={3}>
+                <SimpleGrid columns={3} my={2}>
                     <Text>{token.ticker}</Text>
                     <Text>{token.balance}</Text>
                     <Popover closeOnBlur={false}>
@@ -111,16 +110,15 @@ const Tokens = () => {
                                     <PopoverHeader>Send Tokens</PopoverHeader>
                                     <PopoverCloseButton />
                                     <PopoverBody>
-                                        <Stack align="center">
+                                        <Stack align="center" >
                                             {!loading ?
                                                 <Box>
-                                                    <Input
-                                                        w="90%"
+                                                    <Input my={2}
                                                         placeholder={`Amount`}
                                                         onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAmount(parseFloat(evt.target.value)) }}
                                                     />
                                                     <Input
-                                                        w="90%" placeholder={`Address`} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setTo(evt.target.value) }} />
+                                                        placeholder={`Address`} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setTo(evt.target.value) }} />
                                                     <Text textAlign="center">Fee: {fee}</Text>
                                                     <Button isDisabled={!state.key} w="90%" onClick={() => {
                                                         initTokenTransfer(token, onClose);
