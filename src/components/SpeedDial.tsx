@@ -46,8 +46,17 @@ const SpeedDial = (props : any)=> {
 
   return (<div ref={wrapperRef} style={{position: "fixed", bottom: "50px", right:"20px"}}>
    <IconButton aria-label="open" isRound icon={isOpen ? <FaMinus />: <FaPlus />}  onClick={(evt: React.MouseEvent) => {console.log(evt);setIsOpen(!isOpen)}} />
-      {isOpen &&
-       <SpeedDialItem icon={<FaWallet />} label="Open Wallet" clickHandler={() => {}}/>}
+      {isOpen ?
+       <SpeedDialItem icon={<FaWallet />} label="Open Wallet" clickHandler={() => {
+        props.onOpen()
+      setIsOpen(false)
+       }}/>
+      :
+      <SpeedDialItem icon={<FaWallet />} label="Close Wallet" clickHandler={() => {
+        del('wallet')
+      setIsOpen(false)
+       }}/>
+      }
 
   </div>)
 }
