@@ -13,10 +13,11 @@ import WalletLoader from './components/WalletLoader'
 import WalletContext, { initWalletState } from './context/walletContext'
 import walletReducer from './reducers/walletReducer'
 import Transactions from './components/Transactions';
-import SpeedDial from './components/SpeedDial'
+import { SpeedDial, SpeedDialItem } from './components/SpeedDial'
 import Tokens from './components/Tokens';
-import { get} from 'idb-keyval'
+import { del, get } from 'idb-keyval'
 import { addWallet } from './providers/wallets'
+import { FaWallet } from 'react-icons/fa';
 
 function App() {
   const [state, dispatch] = React.useReducer(walletReducer, initWalletState)
@@ -29,14 +30,15 @@ function App() {
       let walletDeets = await addWallet(wallet)
       dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: wallet } })
     }
-    get('wallet').then((data : any) => {
-    if (data) {
-      try{
-      loadWallet(data)
+    get('wallet').then((data: any) => {
+      if (data) {
+        try {
+          loadWallet(data)
+        }
+        catch (err) { console.log('Error loading wallet', err) }
       }
-      catch (err) { console.log('Error loading wallet', err)}
-    }})
-  },[])
+    })
+  }, [])
 
   const WalletModal = () => {
     return (<Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -58,37 +60,48 @@ function App() {
     <WalletContext.Provider value={{ dispatch, state }}>
       <ChakraProvider theme={theme}>
         <PortalManager >
-        <Stack w="100%" align="center" >
+          <Stack w="100%" align="center" >
             <Heading>ArMob 2.0</Heading>
-          <Tabs isFitted align="center" variant="enclosed-colored">
-            <TabPanels w="90vw">
-              <TabPanel>
-                {state.address !== '' ?
-                  <Box>
-                    <Tokens />
-                  </Box>
-                  :
-                 <Button onClick={onOpen}>Open Wallet</Button>
+            <Tabs isFitted align="center" variant="enclosed-colored">
+              <TabPanels w="90vw">
+                <TabPanel>
+                  {state.address !== '' ?
+                    <Box>
+                      <Tokens />
+                    </Box>
+                    :
+                    <Button onClick={onOpen}>Open Wallet</Button>
                   }
-              </TabPanel>
-              <TabPanel>
-              {state.address !== '' ?
-                <Transactions />
-                :
-                <Button onClick={onOpen}>Open Wallet</Button>
-                 }
-              </TabPanel>
-            </TabPanels>
-            <TabList position="fixed" bottom="0px" left="0px" w="100vw">
-              <Tab>Wallet</Tab>
-              <Tab>Transactions</Tab>
-            </TabList>
-          </Tabs>
-        </Stack>
-        <Portal >
-        <SpeedDial onOpen={onOpen} />
-        </Portal>
-        <WalletModal />
+                </TabPanel>
+                <TabPanel>
+                  {state.address !== '' ?
+                    <Transactions />
+                    :
+                    <Button onClick={onOpen}>Open Wallet</Button>
+                  }
+                </TabPanel>
+              </TabPanels>
+              <TabList position="fixed" bottom="0px" left="0px" w="100vw">
+                <Tab>Wallet</Tab>
+                <Tab>Transactions</Tab>
+              </TabList>
+            </Tabs>
+          </Stack>
+          <Portal >
+            <SpeedDial>
+              {state.address === '' &&
+                <SpeedDialItem icon={<FaWallet />} label="Open Wallet" clickHandler={() => {
+                  onOpen()
+                }} />}
+              {state.address !== '' &&
+                <SpeedDialItem icon={<FaWallet />} label="Close Wallet" clickHandler={async () => {
+                  await del('wallet');
+                  dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
+                }} />
+              }
+            </SpeedDial>
+          </Portal>
+          <WalletModal />
         </PortalManager>
       </ChakraProvider>
     </WalletContext.Provider>
