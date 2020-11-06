@@ -73,7 +73,7 @@ const TransferModal = (props: any) => {
                 <Stack spacing={2}>
                     <Stack>
                         <Text>From:</Text>
-                        <Text fontSize={14}>{state.address}</Text>
+                        <Text fontSize={14} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">{state.address}</Text>
                     </Stack>
                     {!next && <Fragment>
                         <Stack spacing={2}>

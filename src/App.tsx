@@ -7,7 +7,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton, useDisclosure, Heading
+  ModalCloseButton, useDisclosure, Heading, Portal, PortalManager
 } from '@chakra-ui/core'
 import WalletLoader from './components/WalletLoader'
 import WalletContext, { initWalletState } from './context/walletContext'
@@ -16,9 +16,9 @@ import Transactions from './components/Transactions';
 import SpeedDial from './components/SpeedDial'
 import Tokens from './components/Tokens';
 
+
 function App() {
   const [state, dispatch] = React.useReducer(walletReducer, initWalletState)
-  const [walletModal, openModal] = React.useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure();
 
 
@@ -31,7 +31,6 @@ function App() {
         <ModalBody>
           <WalletLoader onClose={onClose} />
         </ModalBody>
-
         <ModalFooter>
         </ModalFooter>
       </ModalContent>
@@ -42,6 +41,7 @@ function App() {
   return (
     <WalletContext.Provider value={{ dispatch, state }}>
       <ChakraProvider theme={theme}>
+        <PortalManager >
         <Stack w="100%" align="center" >
             <Heading>ArMob 2.0</Heading>
           <Tabs isFitted align="center" variant="enclosed-colored">
@@ -62,9 +62,11 @@ function App() {
             </TabList>
           </Tabs>
         </Stack>
-        {/* @ts-ignore 8*/}
+        <Portal >
         <SpeedDial onOpen={onOpen} />
+        </Portal>
         <WalletModal />
+        </PortalManager>
       </ChakraProvider>
     </WalletContext.Provider>
   );

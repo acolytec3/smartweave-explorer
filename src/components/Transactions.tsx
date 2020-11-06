@@ -5,7 +5,7 @@ import { getTxns } from '../providers/wallets'
 
 const Txn = (txn: any) => {
   return (
-    <AccordionItem textAlign="left">
+    <AccordionItem key={txn.id} textAlign="left">
       <AccordionButton bg="white" border="1px" borderColor="grey">
           <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">ID: {txn.node.id}</Text>
         <AccordionIcon />

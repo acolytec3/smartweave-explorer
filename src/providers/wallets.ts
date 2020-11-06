@@ -188,8 +188,8 @@ export const updateTokens = async (tokens: tokenBalance[], address: string): Pro
     readContract(arweave, token.contract).then(contractState => {
       console.log(contractState)
       if (contractState.balances)
-      return { 'balance': contractState.balances[address] as number, 'ticker': contractState.ticker as string, 'contract': token.contract }
-      else return {'balance':0, 'ticker':'', 'contract':token.contract}
+      return { 'balance': contractState.balances[address] as number, 'ticker': contractState.ticker as string, 'contract': token.contract, contractState:contractState }
+      else return {'balance':0, 'ticker':'', 'contract':token.contract,contractState:contractState}
     })))
   return tokenBalances
   }
