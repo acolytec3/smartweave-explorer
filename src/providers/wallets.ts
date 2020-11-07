@@ -1,7 +1,20 @@
 import Arweave from 'arweave'
 import axios from 'axios'
 import { readContract, interactWriteDryRun, interactWrite } from 'smartweave'
+//@ts-ignore
+import { generateKeyPair, getKeyPairFromMnemonic } from 'human-crypto-keys'
+import crypto from 'libp2p-crypto'
 import { tokenBalance } from '../context/walletContext'
+
+//@ts-ignore
+window.keypair = generateKeyPair; window.lcrypto = crypto; window.arweave = Arweave
+
+const getArweaveInstance = () => {
+  return Arweave.init({
+    host: 'arweave.net',
+    port: 443,
+  })
+}
 export const addWallet = async (wallet: any): Promise<{ address: string, balance: string }> => {
   let arweave = Arweave.init({
     host: 'arweave.net',
@@ -198,3 +211,18 @@ export const updateTokens = async (tokens: tokenBalance[], address: string): Pro
     return false
   }
 }
+
+export const generate = async (): Promise<string> => {
+  return (await generateKeyPair('rsa',{modulusLength:4096,format:'raw-pem'})).mnemonic
+}
+
+export const regurgitate = async (mnemonic: string): Promise<any> => {
+  let keyPair = await getKeyPairFromMnemonic(mnemonic, 'rsa',{modulusLength:4096, format:'raw-pem'})
+  let privateKey = await crypto.keys.import(keyPair.privateKey, '')
+  let arweave = getArweaveInstance();
+  //@ts-ignore
+  return privateKey._key
+}
+
+//@ts-ignore
+window.generate = generate; window.regurgitate = regurgitate

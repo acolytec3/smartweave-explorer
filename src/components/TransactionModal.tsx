@@ -38,7 +38,7 @@ const TransferModal = (props: any) => {
     useEffect(() => {
         setOpen(props.props.modal)
         updateFee()
-    }, [])
+    }, [props.props.modal])
 
     const initiateTransfer = async () => {
         let transferDeets = {
@@ -62,7 +62,7 @@ const TransferModal = (props: any) => {
         let amount = balance - parseFloat(fee)
         setAmount(amount.toString())
     }
-
+    
     return (<Modal closeOnOverlayClick={false} isCentered isOpen={isOpen} onClose={() => {
         setOpen(false)
         props.props.closeModal()

@@ -1,11 +1,11 @@
 import React from 'react';
 import Dropzone from 'react-dropzone'
 import { Box, Button, Input, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
-import { set} from 'idb-keyval'
-import { addWallet, getTokens } from '../providers/wallets'
+import { set } from 'idb-keyval'
+import { addWallet, getTokens, regurgitate } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
 
-const WalletLoader = (props :any) => {
+const WalletLoader = (props: any) => {
   const toast = useToast()
   const { dispatch } = React.useContext(WalletContext)
   const [loading, setLoading] = React.useState(false)
@@ -64,8 +64,16 @@ const WalletLoader = (props :any) => {
     }
   }
 
-  const addAddress = async () =>
-  {
+  const loadWalletFromMnemonic = async (mnemonic: string) => {
+    let walletObject = await regurgitate(mnemonic);
+    let walletDeets = await addWallet(walletObject);
+    let tokens = await getTokens(walletDeets.address);
+    await set('wallet', JSON.stringify(walletObject))
+    props.onClose();
+    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: tokens } })
+  }
+
+  const addAddress = async () => {
     setLoading(true)
     let walletDeets = await addWallet(address);
     let tokens = await getTokens(address);
@@ -76,24 +84,28 @@ const WalletLoader = (props :any) => {
 
   return (<Stack align="center">
     {loading ? <Spinner /> :
-    <Box w="100%" borderStyle='dashed' borderWidth="2px">
-      <Dropzone onDrop={onDrop}>
-        {({ getRootProps, getInputProps }) => (
-          <section>
-            <div {...getRootProps()}>
-              <input {...getInputProps()} />
-              <Box flexDirection="row" padding={3}><Text fontSize={14} textAlign="center">Drop a wallet file or click to load wallet</Text></Box>
-            </div>
-          </section>
-        )}
-      </Dropzone> 
-    </Box>
+      <Box w="100%" borderStyle='dashed' borderWidth="2px">
+        <Dropzone onDrop={onDrop}>
+          {({ getRootProps, getInputProps }) => (
+            <section>
+              <div {...getRootProps()}>
+                <input {...getInputProps()} />
+                <Box flexDirection="row" padding={3}><Text fontSize={14} textAlign="center">Drop a wallet file or click to load wallet</Text></Box>
+              </div>
+            </section>
+          )}
+        </Dropzone>
+      </Box>
     }
     {!loading && <Stack w="100%">
-      <Input w="93%%" placeholder="Read-only wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {setAddress(evt.target.value)}} />
+      <Input w="93%%" placeholder="Read-only wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
       <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
-      </Stack>}
-    </Stack>
+    </Stack>}
+    {!loading && <Stack w="100%">
+      <Input w="93%%" placeholder="Wallet mnemonic" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
+      <Button isDisabled={(address === '')} onClick={() => loadWalletFromMnemonic(address)}>Load Wallet</Button>
+    </Stack>}
+  </Stack>
   )
 }
 
