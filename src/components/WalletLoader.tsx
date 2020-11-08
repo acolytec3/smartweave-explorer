@@ -4,6 +4,7 @@ import { Box, Button, Input, Spinner, Stack, Text, useToast } from '@chakra-ui/c
 import { set } from 'idb-keyval'
 import { addWallet, getTokens, regurgitate } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
+import { getKeyFromMnemonic } from 'arweave-mnemonic-keys'
 
 const WalletLoader = (props: any) => {
   const toast = useToast()
@@ -65,10 +66,12 @@ const WalletLoader = (props: any) => {
   }
 
   const loadWalletFromMnemonic = async (mnemonic: string) => {
-    let walletObject = await regurgitate(mnemonic);
+    setLoading(true)
+    let walletObject = await getKeyFromMnemonic(mnemonic);
     let walletDeets = await addWallet(walletObject);
     let tokens = await getTokens(walletDeets.address);
     await set('wallet', JSON.stringify(walletObject))
+    setLoading(false)
     props.onClose();
     dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: tokens } })
   }
@@ -98,12 +101,12 @@ const WalletLoader = (props: any) => {
       </Box>
     }
     {!loading && <Stack w="100%">
-      <Input w="93%%" placeholder="Read-only wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
-      <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
-    </Stack>}
-    {!loading && <Stack w="100%">
       <Input w="93%%" placeholder="Wallet mnemonic" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
       <Button isDisabled={(address === '')} onClick={() => loadWalletFromMnemonic(address)}>Load Wallet</Button>
+    </Stack>}
+    {!loading && <Stack w="100%">
+      <Input w="93%%" placeholder="Read-only wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
+      <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
     </Stack>}
   </Stack>
   )

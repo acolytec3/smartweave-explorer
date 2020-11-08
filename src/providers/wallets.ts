@@ -6,9 +6,6 @@ import { generateKeyPair, getKeyPairFromMnemonic } from 'human-crypto-keys'
 import crypto from 'libp2p-crypto'
 import { tokenBalance } from '../context/walletContext'
 
-//@ts-ignore
-window.keypair = generateKeyPair; window.lcrypto = crypto; window.arweave = Arweave
-
 const getArweaveInstance = () => {
   return Arweave.init({
     host: 'arweave.net',
@@ -219,10 +216,6 @@ export const generate = async (): Promise<string> => {
 export const regurgitate = async (mnemonic: string): Promise<any> => {
   let keyPair = await getKeyPairFromMnemonic(mnemonic, 'rsa',{modulusLength:4096, format:'raw-pem'})
   let privateKey = await crypto.keys.import(keyPair.privateKey, '')
-  let arweave = getArweaveInstance();
   //@ts-ignore
   return privateKey._key
 }
-
-//@ts-ignore
-window.generate = generate; window.regurgitate = regurgitate
