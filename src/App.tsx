@@ -16,7 +16,7 @@ import Transactions from './components/Transactions';
 import { SpeedDial, SpeedDialItem } from './components/SpeedDial'
 import Tokens from './components/Tokens';
 import { del, get } from 'idb-keyval'
-import { addWallet } from './providers/wallets'
+import { addWallet, getTokens } from './providers/wallets'
 import { FaWallet } from 'react-icons/fa';
 
 function App() {
@@ -28,7 +28,8 @@ function App() {
       let wallet = JSON.parse(data)
       console.log(JSON.parse(data))
       let walletDeets = await addWallet(wallet)
-      dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: wallet } })
+      let tokens = await getTokens(walletDeets.address);
+      dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: wallet,  tokens: tokens } })
     }
     get('wallet').then((data: any) => {
       if (data) {

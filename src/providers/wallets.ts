@@ -12,11 +12,9 @@ const getArweaveInstance = () => {
     port: 443,
   })
 }
+
 export const addWallet = async (wallet: any): Promise<{ address: string, balance: string }> => {
-  let arweave = Arweave.init({
-    host: 'arweave.net',
-    port: 443,
-  })
+  let arweave = getArweaveInstance()
   let address = ''
   if (typeof wallet === "string") address = wallet;
   else address = await arweave.wallets.jwkToAddress(wallet)
@@ -28,10 +26,7 @@ export const addWallet = async (wallet: any): Promise<{ address: string, balance
 }
 
 export const getTokens = async (address: string): Promise<any[]> => {
-  let arweave = Arweave.init({
-    host: 'arweave.net',
-    port: 443,
-  })
+  let arweave = getArweaveInstance()
   
   let res = await axios.post('https://arweave.net/graphql', {
     query: `query {
@@ -82,9 +77,12 @@ export const getTokens = async (address: string): Promise<any[]> => {
   let tokenBalances = await Promise.all(contracts.map((contract: any) =>
     readContract(arweave, contract).then(contractState => {
       console.log(contractState)
-      if (contractState.balances)
-      return { 'balance': contractState.balances[address], 'ticker': contractState.ticker, 'contract': contract }
+      if (contractState.balances) {
+        return { 'balance': contractState.balances[address], 'ticker': contractState.ticker, 'contract': contract }
+      }
+      else return null
     })))
+    
   return tokenBalances
 }
 

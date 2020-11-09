@@ -82,6 +82,7 @@ const Tokens = () => {
             position: 'bottom'
         })
     }
+
     return (<Box textAlign="left">
         <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">Address: {state.address}</Text>
         <SimpleGrid columns={3}>
@@ -95,6 +96,7 @@ const Tokens = () => {
             <Button isDisabled={!state.key} onClick={() => openModal(true)}>Send</Button>
         </SimpleGrid>
         {state.tokens?.map((token: tokenBalance) => {
+            if (token) {
             return (
                 <SimpleGrid columns={3} my={2}>
                     <Text>{token.ticker}</Text>
@@ -136,7 +138,7 @@ const Tokens = () => {
                     </Popover>
                 </SimpleGrid>
             )
-        })
+        }})
         }
         <TransferModal props={{ modal, closeModal }} />
         <Popover placement="top-end">
