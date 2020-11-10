@@ -5,14 +5,15 @@ import { Stack, IconButton, Text } from '@chakra-ui/core'
 interface SpeedDialItemProps {
   icon: any, //Must pass an iconType object
   label: string
-  clickHandler: () => void
+  clickHandler: () => void,
+  yPos?: string
 }
 
-export const SpeedDialItem: React.FC<SpeedDialItemProps> = ({ icon, label, clickHandler }: SpeedDialItemProps) => {
+export const SpeedDialItem: React.FC<SpeedDialItemProps> = ({ icon, label, clickHandler, yPos }: SpeedDialItemProps) => {
   return (
     <Stack isInline
       position="fixed"
-      bottom="100px"
+      bottom={yPos}
       right="20px"
       align="center">
       <Text fontSize={11}>{label}</Text>
@@ -24,7 +25,9 @@ export const SpeedDialItem: React.FC<SpeedDialItemProps> = ({ icon, label, click
 export const SpeedDial: React.FC = ({ children }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const wrapperRef = React.useRef(null);
-  
+  //@ts-ignore
+  const items = children && children.filter((child: any) => React.isValidElement(child))
+  var yPos = 100
   const useOutsideAlerter = (ref: any) => {
     React.useEffect(() => {
       function handleClickOutside(event: MouseEvent) {
@@ -39,10 +42,15 @@ export const SpeedDial: React.FC = ({ children }) => {
     }, [ref]);
   }
   useOutsideAlerter(wrapperRef);
-
+  //@ts-ignore
   return (<div ref={wrapperRef} style={{ position: "fixed", bottom: "50px", right: "20px" }}>
     <IconButton aria-label="open" isRound icon={isOpen ? <FaMinus /> : <FaPlus />} onClick={(evt: React.MouseEvent) => setIsOpen(!isOpen) } />
-    {isOpen && children}
+    {/* @ts-ignore */}
+    {isOpen && items!.map((child, index) => {
+      if (React.isValidElement(child)) {
+        //@ts-ignore
+        return React.cloneElement(child, {...child.props,yPos: (yPos + 50*(index)).toString()+'px'})
+      }} )}
   </div>)
 }
 
