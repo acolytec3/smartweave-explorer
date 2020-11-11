@@ -17,12 +17,18 @@ import { SpeedDial, SpeedDialItem } from './components/SpeedDial'
 import Tokens from './components/Tokens';
 import { del, get } from 'idb-keyval'
 import { addWallet, getTokens } from './providers/wallets'
-import { FaWallet } from 'react-icons/fa';
+import { FaWallet, FaUpload } from 'react-icons/fa';
+import TransactionDrawer from './components/TransactionDrawer'
+
 
 function App() {
   const [state, dispatch] = React.useReducer(walletReducer, initWalletState)
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [open, setOpen] = React.useState(false)
 
+  const handleClose = () => {
+    setOpen(false);
+  }
   React.useEffect(() => {
     const loadWallet = async (data: string) => {
       let wallet = JSON.parse(data)
@@ -98,11 +104,14 @@ function App() {
                 <SpeedDialItem icon={<FaWallet />} label="Close Wallet" clickHandler={async () => {
                   await del('wallet');
                   dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
-                }} />
+                }} />}
+               {state.address !== '' && <SpeedDialItem icon={<FaUpload />} label="Upload File" clickHandler={() => setOpen(true)} />
+                
               }
             </SpeedDial>
           </Portal>
           <WalletModal />
+          <TransactionDrawer isOpen={open} close={handleClose} />
         </PortalManager>
       </ChakraProvider>
     </WalletContext.Provider>

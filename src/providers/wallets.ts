@@ -2,10 +2,10 @@ import Arweave from 'arweave'
 import axios from 'axios'
 import { readContract, interactWriteDryRun, interactWrite } from 'smartweave'
 //@ts-ignore
-import { generateKeyPair, getKeyPairFromMnemonic } from 'human-crypto-keys'
-import crypto from 'libp2p-crypto'
+import { generateKeyPair } from 'human-crypto-keys'
 import { tokenBalance } from '../context/walletContext'
-
+import { JWKInterface } from 'arweave/node/lib/wallet'
+import * as ArweaveUtils from 'arweave/web/lib/utils'
 const getArweaveInstance = () => {
   return Arweave.init({
     host: 'arweave.net',
@@ -159,10 +159,7 @@ export const sendTransfer = async (transfer: any, key: any): Promise<string> => 
 
 export const sendTokens = async (contract: string, amount: number, target: string, key: any): Promise<string | boolean> => {
   try {
-    let arweave = Arweave.init({
-      host: 'arweave.net',
-      port: 443,
-    })
+    let arweave = getArweaveInstance()
     let res = await interactWriteDryRun(arweave, key, contract, {
       target: target,
       qty: amount,
@@ -184,6 +181,23 @@ export const sendTokens = async (contract: string, amount: number, target: strin
     console.log(err)
     return (err.toString())
   }
+}
+
+export const uploadFile = async (data: File, key: JWKInterface, tags: { name: string; value: string; }[]) => {
+  try {
+    let arweave = getArweaveInstance()
+    let buffer = await data.arrayBuffer()
+    let transaction = await arweave.createTransaction({data: buffer}, key)
+    tags.forEach((tag) => transaction.addTag(tag.name,tag.value))
+    await arweave.transactions.sign(transaction, key)
+    const response = await arweave.transactions.post(transaction);
+    console.log(response);
+  }
+  catch (err) {
+    console.log(`Error sending tranfer - ${err}`)
+    return `Error submitting transaction - ${err}`
+  }
+  return 'Transaction submitted successfully'
 }
 
 export const updateTokens = async (tokens: tokenBalance[], address: string): Promise<tokenBalance[] | false> => {
@@ -209,11 +223,4 @@ export const updateTokens = async (tokens: tokenBalance[], address: string): Pro
 
 export const generate = async (): Promise<string> => {
   return (await generateKeyPair('rsa',{modulusLength:4096,format:'raw-pem'})).mnemonic
-}
-
-export const regurgitate = async (mnemonic: string): Promise<any> => {
-  let keyPair = await getKeyPairFromMnemonic(mnemonic, 'rsa',{modulusLength:4096, format:'raw-pem'})
-  let privateKey = await crypto.keys.import(keyPair.privateKey, '')
-  //@ts-ignore
-  return privateKey._key
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import Dropzone from 'react-dropzone'
 import { Box, Button, Input, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
 import { set } from 'idb-keyval'
-import { addWallet, getTokens, regurgitate } from '../providers/wallets'
+import { addWallet, getTokens } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
 import { getKeyFromMnemonic } from 'arweave-mnemonic-keys'
 
@@ -81,8 +81,8 @@ const WalletLoader = (props: any) => {
     let walletDeets = await addWallet(address);
     let tokens = await getTokens(address);
     await set('wallet', address)
-    props.onClose();
     dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '', tokens: tokens } })
+    props.onClose();
   }
 
   return (<Stack align="center">
