@@ -5,7 +5,7 @@ import { readContract, interactWriteDryRun, interactWrite } from 'smartweave'
 import { generateKeyPair } from 'human-crypto-keys'
 import { tokenBalance } from '../context/walletContext'
 import { JWKInterface } from 'arweave/node/lib/wallet'
-import * as ArweaveUtils from 'arweave/web/lib/utils'
+
 const getArweaveInstance = () => {
   return Arweave.init({
     host: 'arweave.net',

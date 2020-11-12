@@ -56,7 +56,7 @@ const Tags: React.FC<TagsProps> = ({ tags, clickHandler }) => {
 }
 
 const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
-    const { state } = React.useContext(WalletContext)
+    const { state, dispatch } = React.useContext(WalletContext)
     const toast = useToast();
     const [data, setData] = React.useState(null as any)
     const [tags, setTags] = React.useState([] as { name: string; value: string; }[])
@@ -69,8 +69,9 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
             return res.blob()
             }).then((blob) => {
                 //@ts-ignore
-                onDrop([blob]
-            )})
+                onDrop([blob])
+                dispatch({type:'SET_PICTURE', payload:{picture:''}})
+            })
     }},[state.picture])
 
     const tagsHandler = (name: string, value: string) => {
@@ -149,8 +150,8 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
     }
 
     return (
-        <>
-            <Drawer isOpen={isOpen} placement="right" onClose={close} isFullHeight>
+
+            <Drawer isOpen={isOpen} placement="right" onClose={close} isFullHeight size="full">
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton onClick={handleClose} />
@@ -176,11 +177,11 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
                     </DrawerBody>
                     <DrawerFooter>
                         <Button variant="outline" mr={3} onClick={handleClose}>Cancel</Button>
-                        <Button color="blue" onClick={handleUpload}>Upload File</Button>
+                        <Button color="blue" isDisabled={!data} onClick={handleUpload}>Upload File</Button>
                     </DrawerFooter>
                 </DrawerContent>
             </Drawer>
-        </>
+
     );
 }
 
