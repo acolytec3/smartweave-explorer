@@ -16,7 +16,8 @@ export type walletState = {
     balance: string,
     address: string,
     tokens?: tokenBalance[],
-    wallets?: wallet[]
+    wallets?: wallet[],
+    picture?: string
 }
 export const initWalletState: walletState = {
         key: {} as any,

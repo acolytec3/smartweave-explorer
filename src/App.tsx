@@ -17,18 +17,22 @@ import { SpeedDial, SpeedDialItem } from './components/SpeedDial'
 import Tokens from './components/Tokens';
 import { del, get } from 'idb-keyval'
 import { addWallet, getTokens } from './providers/wallets'
-import { FaWallet, FaUpload } from 'react-icons/fa';
+import { FaWallet, FaUpload, FaCameraRetro } from 'react-icons/fa';
 import TransactionDrawer from './components/TransactionDrawer'
+import CameraWindow from './components/Camera';
 
 
 function App() {
   const [state, dispatch] = React.useReducer(walletReducer, initWalletState)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [open, setOpen] = React.useState(false)
-
-  const handleClose = () => {
-    setOpen(false);
+  const [openCamera, setCamera] = React.useState(false)
+  
+  const handleClose = (modal: string) => {
+    if (modal === 'txn') setOpen(false);
+    if (modal === 'camera') setCamera(false)
   }
+
   React.useEffect(() => {
     const loadWallet = async (data: string) => {
       let wallet = JSON.parse(data)
@@ -105,13 +109,14 @@ function App() {
                   await del('wallet');
                   dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
                 }} />}
-               {state.address !== '' && <SpeedDialItem icon={<FaUpload />} label="Upload File" clickHandler={() => setOpen(true)} />
-                
+               {state.address !== '' && <SpeedDialItem icon={<FaUpload />} label="Upload File" clickHandler={() => setOpen(true)} /> 
               }
+              {state.address !== '' && <SpeedDialItem icon={<FaCameraRetro />} label="Take Picture" clickHandler={() => setCamera(true)} />}
             </SpeedDial>
           </Portal>
           <WalletModal />
-          <TransactionDrawer isOpen={open} close={handleClose} />
+          <TransactionDrawer isOpen={open} close={() => handleClose('txn')} />
+          <CameraWindow isOpen={openCamera} close={() => handleClose('camera')} setTxnOpen={() => setOpen(true)}/>
         </PortalManager>
       </ChakraProvider>
     </WalletContext.Provider>

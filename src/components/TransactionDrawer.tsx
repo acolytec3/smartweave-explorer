@@ -18,7 +18,7 @@ import WalletContext from '../context/walletContext'
 import { getFee, uploadFile } from '../providers/wallets'
 interface TxnDrawerProps {
     isOpen: boolean,
-    close: () => void
+    close: () => void,
 }
 
 interface TagsProps {
@@ -62,6 +62,16 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
     const [tags, setTags] = React.useState([] as { name: string; value: string; }[])
     const [fee, setFee] = React.useState('0')
     const [loading, setLoading] = React.useState(false)
+
+    React.useEffect(() => {
+        if (state.picture) {
+            fetch(state.picture).then((res) => {
+            return res.blob()
+            }).then((blob) => {
+                //@ts-ignore
+                onDrop([blob]
+            )})
+    }},[state.picture])
 
     const tagsHandler = (name: string, value: string) => {
         if (tags !== undefined) {
@@ -127,7 +137,7 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
             reader.readAsText(acceptedFiles[0])
         }
         catch (err) {
-            console.log('Unable to process file')
+            console.log('Unable to process file', err)
             toast({
                 title: 'Error processing file',
                 status: 'error',
@@ -140,7 +150,7 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
 
     return (
         <>
-            <Drawer isOpen={isOpen} placement="right" onClose={close} >
+            <Drawer isOpen={isOpen} placement="right" onClose={close} isFullHeight>
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton onClick={handleClose} />
@@ -164,7 +174,6 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
                             </Stack>}
                         {data && loading && <Spinner />}
                     </DrawerBody>
-
                     <DrawerFooter>
                         <Button variant="outline" mr={3} onClick={handleClose}>Cancel</Button>
                         <Button color="blue" onClick={handleUpload}>Upload File</Button>

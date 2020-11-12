@@ -22,6 +22,12 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
                 ...state,
                 tokens: action.payload.tokens
             }
+        };
+        case 'SET_PICTURE': {
+            return {
+                ...state,
+                picture: action.payload.picture
+            }
         }
         default: return state
     }
