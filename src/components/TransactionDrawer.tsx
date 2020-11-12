@@ -151,9 +151,9 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
 
     return (
 
-            <Drawer isOpen={isOpen} placement="right" onClose={close} isFullHeight size="full">
+            <Drawer isOpen={isOpen} placement="right" onClose={close} size="full">
                 <DrawerOverlay />
-                <DrawerContent>
+                <DrawerContent >
                     <DrawerCloseButton onClick={handleClose} />
                     <DrawerHeader>Upload file to Arweave</DrawerHeader>
                     <DrawerBody>
@@ -173,10 +173,11 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
                             <Text>Fee: {fee} AR</Text>
                             <Tags tags={tags} clickHandler={tagsHandler} />
                             </Stack>}
-                        {data && loading && <Spinner />}
+                        {data && loading && <Spinner position="absolute" top="50%" left="50%"/>}
                     </DrawerBody>
-                    <DrawerFooter>
-                        <Button variant="outline" mr={3} onClick={handleClose}>Cancel</Button>
+                    {/* margin is a hack to get buttons to show on mobile browsers */}
+                    <DrawerFooter mb="20%">
+                    <Button variant="outline" onClick={handleClose} mr={3}>Cancel</Button>
                         <Button color="blue" isDisabled={!data} onClick={handleUpload}>Upload File</Button>
                     </DrawerFooter>
                 </DrawerContent>
