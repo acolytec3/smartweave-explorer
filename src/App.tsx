@@ -7,7 +7,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton, useDisclosure, Heading, Portal, PortalManager, Button
+  ModalCloseButton, useDisclosure, Heading, Button, Spinner
 } from '@chakra-ui/core'
 import WalletLoader from './components/WalletLoader'
 import WalletContext, { initWalletState } from './context/walletContext'
@@ -27,6 +27,7 @@ function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [open, setOpen] = React.useState(false)
   const [openCamera, setCamera] = React.useState(false)
+  const [loading, setLoading] = React.useState(true)
 
   const handleClose = (modal: string) => {
     if (modal === 'txn') setOpen(false);
@@ -40,6 +41,7 @@ function App() {
       let walletDeets = await addWallet(wallet)
       let tokens = await getTokens(walletDeets.address);
       dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: wallet, tokens: tokens } })
+      setLoading(false)
     }
     get('wallet').then((data: any) => {
       if (data) {
@@ -48,6 +50,7 @@ function App() {
         }
         catch (err) { console.log('Error loading wallet', err) }
       }
+      else setLoading(false)
     })
   }, [])
 
@@ -70,19 +73,20 @@ function App() {
   return (
     <WalletContext.Provider value={{ dispatch, state }}>
       <ChakraProvider theme={theme}>
-        <PortalManager >
           <Stack w="100%" align="center" >
             <Heading>ArMob 2.0</Heading>
             <Tabs isFitted align="center" variant="enclosed-colored">
               <TabPanels w="90vw">
                 <TabPanel>
-                  {state.address !== '' ?
+                {loading ? <Spinner position="fixed" bottom="50%" right="50%" /> :
+                   state.address !== '' ?
                     <Box>
                       <Tokens />
                     </Box>
                     :
                     <Button onClick={onOpen}>Open Wallet</Button>
                   }
+                  
                 </TabPanel>
                 <TabPanel>
                   {state.address !== '' ?
@@ -98,7 +102,6 @@ function App() {
               </TabList>
             </Tabs>
           </Stack>
-          <Portal >
             <SpeedDial>
               {state.address === '' &&
                 <SpeedDialItem icon={<FaWallet />} label="Open Wallet" clickHandler={() => {
@@ -113,11 +116,9 @@ function App() {
               }
               {state.key !== '' && <SpeedDialItem icon={<FaCameraRetro />} label="Take Picture" clickHandler={() => setCamera(true)} />}
             </SpeedDial>
-          </Portal>
           <WalletModal />
           <TransactionDrawer isOpen={open} close={() => handleClose('txn')} />
           <CameraWindow isOpen={openCamera} close={() => handleClose('camera')} setTxnOpen={() => setOpen(true)} />
-        </PortalManager>
       </ChakraProvider>
     </WalletContext.Provider>
   );
