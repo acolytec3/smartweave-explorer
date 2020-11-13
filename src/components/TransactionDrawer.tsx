@@ -66,13 +66,14 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
     React.useEffect(() => {
         if (state.picture) {
             fetch(state.picture).then((res) => {
-            return res.blob()
+                return res.blob()
             }).then((blob) => {
                 //@ts-ignore
                 onDrop([blob])
-                dispatch({type:'SET_PICTURE', payload:{picture:''}})
+                dispatch({ type: 'SET_PICTURE', payload: { picture: '' } })
             })
-    }},[state.picture])
+        }
+    }, [state.picture])
 
     const tagsHandler = (name: string, value: string) => {
         if (tags !== undefined) {
@@ -91,7 +92,7 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
     const handleUpload = async () => {
         setLoading(true)
         let res = await uploadFile(data, state.key, tags)
-        if (res.startsWith('Transaction')){
+        if (res.startsWith('Transaction')) {
             toast({
                 title: 'Success',
                 status: 'success',
@@ -112,8 +113,9 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
 
         setTimeout(() => {
             setLoading(false)
-            handleClose()}
-            ,1000)
+            handleClose()
+        }
+            , 1000)
     }
 
     const onDrop = async (acceptedFiles: File[]) => {
@@ -151,37 +153,37 @@ const TransactionDrawer: React.FC<TxnDrawerProps> = ({ isOpen, close }) => {
 
     return (
 
-            <Drawer isOpen={isOpen} placement="right" onClose={close} size="full">
-                <DrawerOverlay />
-                <DrawerContent >
-                    <DrawerCloseButton onClick={handleClose} />
-                    <DrawerHeader>Upload file to Arweave</DrawerHeader>
-                    <DrawerBody>
-                        {!data && <Box w="100%" borderStyle='dashed' borderWidth="2px">
-                            <Dropzone onDrop={onDrop}>
-                                {({ getRootProps, getInputProps }) => (
-                                    <section>
-                                        <div {...getRootProps()}>
-                                            <input {...getInputProps()} />
-                                            <Box flexDirection="row" padding={3}><Text fontSize={14} textAlign="center">Drop a file or click to select from system file picker</Text></Box>
-                                        </div>
-                                    </section>
-                                )}
-                            </Dropzone>
-                        </Box>}
-                        {data && !loading && <Stack>
-                            <Text>Fee: {fee} AR</Text>
-                            <Tags tags={tags} clickHandler={tagsHandler} />
-                            </Stack>}
-                        {data && loading && <Spinner position="absolute" top="50%" left="50%"/>}
-                    </DrawerBody>
-                    {/* margin is a hack to get buttons to show on mobile browsers */}
-                    <DrawerFooter mb="20%">
+        <Drawer isOpen={isOpen} placement="right" onClose={close} size="full">
+            <DrawerOverlay />
+            <DrawerContent >
+                <DrawerCloseButton onClick={handleClose} />
+                <DrawerHeader>Upload file to Arweave</DrawerHeader>
+                <DrawerBody>
+                    {!data && <Box w="100%" borderStyle='dashed' borderWidth="2px">
+                        <Dropzone onDrop={onDrop}>
+                            {({ getRootProps, getInputProps }) => (
+                                <section>
+                                    <div {...getRootProps()}>
+                                        <input {...getInputProps()} />
+                                        <Box flexDirection="row" padding={3}><Text fontSize={14} textAlign="center">Drop a file or click to select from system file picker</Text></Box>
+                                    </div>
+                                </section>
+                            )}
+                        </Dropzone>
+                    </Box>}
+                    {data && !loading && <Stack>
+                        <Text>Fee: {fee} AR</Text>
+                        <Tags tags={tags} clickHandler={tagsHandler} />
+                    </Stack>}
+                    {data && loading && <Spinner position="absolute" top="50%" left="50%" />}
+                </DrawerBody>
+                {/* margin is a hack to get buttons to show on mobile browsers */}
+                <DrawerFooter mb={{base:"25%",sm:"25%",md:"25%",lg:0,xl:0}}>
                     <Button variant="outline" onClick={handleClose} mr={3}>Cancel</Button>
-                        <Button color="blue" isDisabled={!data} onClick={handleUpload}>Upload File</Button>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
+                    <Button color="blue" isDisabled={!data} onClick={handleUpload}>Upload File</Button>
+                </DrawerFooter>
+            </DrawerContent>
+        </Drawer>
 
     );
 }
