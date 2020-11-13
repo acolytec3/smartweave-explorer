@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, SimpleGrid, Box, Heading, Button, Input, Stack, Spinner, IconButton, PopoverTrigger, Popover, PopoverContent, Select, } from '@chakra-ui/core'
 import WalletContext from '../context/walletContext'
 import { getTxns } from '../providers/wallets'
-import { FaSearch } from 'react-icons/fa'
+import { FaCaretRight, FaSearch } from 'react-icons/fa'
 
 const Txn = (txn: any) => {
   return (
@@ -51,23 +51,23 @@ const Transactions = () => {
       setLoading(true)
       switch(filter) {
       case 'all':
-        let fromTxns = await getTxns(state.address)
-        let toTxns = await getTxns(undefined, undefined, undefined, state.address)
+        let fromTxns = await getTxns({address : state.address})
+        let toTxns = await getTxns({to : state.address})
         let txns = [...fromTxns, ...toTxns]
         console.log(txns)
         //@ts-ignore
         setTxns(txns)
         break;
       case 'from':
-        let fTxns = await getTxns(state.address)
+        let fTxns = await getTxns({address : state.address})
         setTxns(fTxns)
         break;
       case 'to':
-        let tTxns = await getTxns(undefined, undefined, undefined, state.address)
+        let tTxns = await getTxns({ to: state.address})
         setTxns(tTxns)
         break;
       default:
-        let Txns = await getTxns(state.address)
+        let Txns = await getTxns({ address: state.address })
         setTxns(Txns)
       }
       setLoading(false)
@@ -78,10 +78,19 @@ const Transactions = () => {
     else setTxns([])
   }, [state.address, filter])
 
-  const retrieveTransactions = async () => {
+  const retrieveTransactionsForTag = async () => {
     setLoading(true)
-    let txns = await getTxns(state.address, name, value)
+    let txns = await getTxns({ address: state.address, name: name, value: value})
     setTxns(txns)
+    setLoading(false)
+  }
+
+  const getTxnsWithCursor = async () => {
+    setLoading(true)
+    //@ts-ignore
+    let cursor = txns[txns.length-1].cursor
+    let txnsWithCursor = await getTxns({ address: state.address, cursor: cursor})
+    setTxns(txnsWithCursor)
     setLoading(false)
   }
 
@@ -91,7 +100,8 @@ const Transactions = () => {
       <option value="to">Transactions to wallet</option>
       <option value="all">All transactions</option>
     </Select>
-    {!loading ? <><Accordion allowToggle allowMultiple w="100%">
+    {!loading ? <>
+    <IconButton aria-label="left" icon={<FaCaretRight />} onClick={getTxnsWithCursor}/><Accordion allowToggle allowMultiple w="100%">
       {/* @ts-ignore */}
       {txns.length > 0 ? txns.map((txn) => Txn(txn)) : null}
     </Accordion>
@@ -105,7 +115,7 @@ const Transactions = () => {
             <Input placeholder="Value" value={value} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => setValue(evt.target.value)} />
             <Button isDisabled={(name === '' || value === '')}
               onClick={() => {
-                retrieveTransactions()
+                retrieveTransactionsForTag()
                 setName('')
                 setValue('')
               }}>

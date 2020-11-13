@@ -86,12 +86,27 @@ export const getTokens = async (address: string): Promise<any[]> => {
   return tokenBalances
 }
 
-export const getTxns = async (address?: string, name?: string, value?: string, to?: string): Promise<any> => {
+export interface gQLParams {
+  address?: string,
+  name?: string,
+  value?: string,
+  to?: string,
+  cursor?: string
+}
+export const getTxns = async ({address = undefined, name = undefined, value = undefined, to = undefined, cursor = undefined}:gQLParams): Promise<any> => {
+  let searchQuery = `first: 10 
+    ${address ? 'owners:["'+address+'"]' : ''}
+    ${cursor ? 'after:"' + cursor + '"' : ''} 
+    ${name ? 'tags:{name:"' + name + '",values:["' + value + '"]}' : ''}
+    ${to ? 'recipients:  ["' +to + '"]' : ''}`
+  console.log('searchQuery',searchQuery)
   if (!name && !to)
   return axios.post('https://arweave.net/graphql', {
       query: `query {
-                transactions(owners:  ["${address}"]) {
+                transactions(${searchQuery}
+                 ) {
                   edges {
+                    cursor
                     node {
                       id
                       recipient
@@ -123,8 +138,9 @@ export const getTxns = async (address?: string, name?: string, value?: string, t
   else if (!name && to) {
     return axios.post('https://arweave.net/graphql', {
       query: `query {
-                transactions(recipients:  ["${to}"]) {
+                transactions(${searchQuery}) {
                   edges {
+                    cursor
                     node {
                       id
                       owner {
@@ -159,8 +175,9 @@ export const getTxns = async (address?: string, name?: string, value?: string, t
   else {
     return axios.post('https://arweave.net/graphql', {
       query: `query {
-        transactions(owners:["${address}"], tags:{name:"${name}",values:["${value}"]}) {
+        transactions(${searchQuery}) {
           edges {
+            cursor
             node {
               id
               recipient
