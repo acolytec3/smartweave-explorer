@@ -21,16 +21,16 @@ A mobile wallet for the permaweb
  - Trust but verify
  
  ## Roadmap
-- Support data transactions in various forms (file upload, take picture with device camera and post to Arweave, etc)
-- Support custom tags on any/all transactions
-- Additional support for Smartweave contract interactions
-    - Interact with all exposed Smartweave functions
-    - Read and view contract state
-- Expanded PST interactions
-    - View vaulted balances
-    - Integrate Verto buy/sell functionality
-- Integrate ArweaveID support into wallet
-- Support storing multiple wallets locally and switching between them
+- [x] Support data transactions in various forms (file upload, take picture with device camera and post to Arweave, etc)
+- [x] Support custom tags on any/all transactions
+- [ ] Additional support for Smartweave contract interactions
+- [ ] Interact with all exposed Smartweave functions
+- [ ] Read and view Smartweave contract state
+- [ ] Expanded PST interactions
+    - [ ] View vaulted balances
+    - [ ] Integrate Verto buy/sell functionality
+- [ ] Integrate ArweaveID support into wallet
+- [ ] Support storing multiple wallets locally and switching between them
 
 ### Possible future work
 - Dapp-specific integrations (e.g. WeaveMail, ArDrive, etc)
