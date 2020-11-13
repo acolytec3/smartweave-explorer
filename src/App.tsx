@@ -109,9 +109,9 @@ function App() {
                   await del('wallet');
                   dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
                 }} />}
-              {state.address !== '' && <SpeedDialItem icon={<FaUpload />} label="Upload File" clickHandler={() => setOpen(true)} />
+              {state.key !== '' && <SpeedDialItem icon={<FaUpload />} label="Upload File" clickHandler={() => setOpen(true)} />
               }
-              {state.address !== '' && <SpeedDialItem icon={<FaCameraRetro />} label="Take Picture" clickHandler={() => setCamera(true)} />}
+              {state.key !== '' && <SpeedDialItem icon={<FaCameraRetro />} label="Take Picture" clickHandler={() => setCamera(true)} />}
             </SpeedDial>
           </Portal>
           <WalletModal />
