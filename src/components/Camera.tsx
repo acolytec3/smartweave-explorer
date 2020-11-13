@@ -1,14 +1,15 @@
 import React from 'react'
 import Camera, { FACING_MODES, IMAGE_TYPES } from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
-import { Button, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/core";
+import { Button, IconButton, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack } from "@chakra-ui/core";
 import WalletContext from '../context/walletContext'
+import { IoMdRefreshCircle } from 'react-icons/io'
 interface CameraProps {
     isOpen: boolean,
     close: (modal: string) => void,
     setTxnOpen: () => void
 }
-const CameraWindow : React.FC<CameraProps> = ({ isOpen, close, setTxnOpen }) => {
+const CameraWindow: React.FC<CameraProps> = ({ isOpen, close, setTxnOpen }) => {
     const [dataUri, setDataUri] = React.useState('');
     const { dispatch } = React.useContext(WalletContext)
     function handleTakePhotoAnimationDone(dataUri: string) {
@@ -22,31 +23,30 @@ const CameraWindow : React.FC<CameraProps> = ({ isOpen, close, setTxnOpen }) => 
     }
     const handleImageSave = () => {
         setDataUri('')
-        dispatch({type:'SET_PICTURE', payload:{picture:dataUri}})
+        dispatch({ type: 'SET_PICTURE', payload: { picture: dataUri } })
         setTxnOpen()
         close('camera')
     }
 
-    const isFullscreen = false;
     return (
-        <Modal closeOnOverlayClick={true} isOpen={isOpen} onClose={handleClose}>
+        <Modal closeOnOverlayClick={true} isOpen={isOpen} onClose={handleClose} >
             <ModalOverlay>
                 <ModalContent>
                     <ModalHeader></ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        {
-                            (dataUri)
-                                ? <>
-                                    <Image src={dataUri} />
-                                    <Button onClick={handleImageSave}>Upload image to Arweave</Button>
-                                </>
+                        <Stack align="center">
+                            {(dataUri) ? <Image src={dataUri} />
                                 : <Camera onTakePhotoAnimationDone={handleTakePhotoAnimationDone}
-                                    isFullscreen={isFullscreen}
-                                    imageType = {IMAGE_TYPES.JPG}
-                                    idealFacingMode = {FACING_MODES.ENVIRONMENT}
-                                />
-                        }
+                                    imageType={IMAGE_TYPES.JPG}
+                                    idealFacingMode={FACING_MODES.ENVIRONMENT}
+                                    isImageMirror={false}
+                                >
+                                    <IconButton aria-label="refresh" icon={<IoMdRefreshCircle />} />
+                                    </Camera>
+                            }
+                            <Button isDisabled={!dataUri} onClick={handleImageSave}>Next</Button>
+                        </Stack>
                     </ModalBody>
                 </ModalContent>
             </ModalOverlay>
