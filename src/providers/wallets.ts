@@ -86,17 +86,14 @@ export const getTokens = async (address: string): Promise<any[]> => {
   return tokenBalances
 }
 
-export const getTxns = async (address: string, name?: string, value?: string): Promise<any> => {
-  if (!name)
+export const getTxns = async (address?: string, name?: string, value?: string, to?: string): Promise<any> => {
+  if (!name && !to)
   return axios.post('https://arweave.net/graphql', {
       query: `query {
                 transactions(owners:  ["${address}"]) {
                   edges {
                     node {
                       id
-                      owner {
-                        address
-                      }
                       recipient
                       tags {
                         name
@@ -123,6 +120,42 @@ export const getTxns = async (address: string, name?: string, value?: string): P
       console.log(err)
       return []
     })
+  else if (!name && to) {
+    return axios.post('https://arweave.net/graphql', {
+      query: `query {
+                transactions(recipients:  ["${to}"]) {
+                  edges {
+                    node {
+                      id
+                      owner {
+                        address
+                      }
+                      tags {
+                        name
+                        value
+                      }
+                      fee {
+                        winston
+                        ar
+                      }
+                      quantity {
+                        winston
+                        ar
+                      }
+                    }
+                  }
+                }
+              }`
+    })
+      .then((res) => {
+        console.log(res.data)
+        return res.data.data.transactions.edges
+      })
+    .catch((err) => {
+      console.log(err)
+      return []
+    })
+  }
   else {
     return axios.post('https://arweave.net/graphql', {
       query: `query {
@@ -130,9 +163,6 @@ export const getTxns = async (address: string, name?: string, value?: string): P
           edges {
             node {
               id
-              owner {
-                address
-              }
               recipient
               tags {
                 name

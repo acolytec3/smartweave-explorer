@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, SimpleGrid, Box, Heading, Button, Input, Stack, Spinner, IconButton, PopoverTrigger, Popover, PopoverContent, } from '@chakra-ui/core'
+import { Text, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, SimpleGrid, Box, Heading, Button, Input, Stack, Spinner, IconButton, PopoverTrigger, Popover, PopoverContent, Select, } from '@chakra-ui/core'
 import WalletContext from '../context/walletContext'
 import { getTxns } from '../providers/wallets'
 import { FaSearch } from 'react-icons/fa'
@@ -18,6 +18,10 @@ const Txn = (txn: any) => {
           <Text fontSize={10}>{txn.node.fee.ar} AR</Text>
           {txn.node.recipient && <React.Fragment><Text fontSize={10}>Recipient: </Text>
             <Text fontSize={10}>{txn.node.recipient}</Text>
+            <Text fontSize={10}>Amount: </Text>
+            <Text fontSize={10}>{txn.node.quantity.ar} AR</Text></React.Fragment>}
+            {txn.node.owner && <React.Fragment><Text fontSize={10}>From: </Text>
+            <Text fontSize={10}>{txn.node.owner.address}</Text>
             <Text fontSize={10}>Amount: </Text>
             <Text fontSize={10}>{txn.node.quantity.ar} AR</Text></React.Fragment>}
         </SimpleGrid>
@@ -40,17 +44,39 @@ const Transactions = () => {
   const [txns, setTxns] = React.useState([])
   const [name, setName] = React.useState('')
   const [value, setValue] = React.useState('')
+  const [filter, setFilter] = React.useState('')
 
   React.useEffect(() => {
+    async function getTransactions () {
+      setLoading(true)
+      switch(filter) {
+      case 'all':
+        let fromTxns = await getTxns(state.address)
+        let toTxns = await getTxns(undefined, undefined, undefined, state.address)
+        let txns = [...fromTxns, ...toTxns]
+        console.log(txns)
+        //@ts-ignore
+        setTxns(txns)
+        break;
+      case 'from':
+        let fTxns = await getTxns(state.address)
+        setTxns(fTxns)
+        break;
+      case 'to':
+        let tTxns = await getTxns(undefined, undefined, undefined, state.address)
+        setTxns(tTxns)
+        break;
+      default:
+        let Txns = await getTxns(state.address)
+        setTxns(Txns)
+      }
+      setLoading(false)
+    }
     if (state.address !== '') {
-      getTxns(state.address)
-        .then((txns) => {
-          console.log(txns)
-          setTxns(txns)
-        })
+      getTransactions()
     }
     else setTxns([])
-  }, [state.address])
+  }, [state.address, filter])
 
   const retrieveTransactions = async () => {
     setLoading(true)
@@ -60,6 +86,11 @@ const Transactions = () => {
   }
 
   return (<Box h="100%">
+    <Select onChange={(evt) => setFilter(evt.target.value)} value={filter} placeholder="Filtering Options">
+      <option value="from">Transactions from wallet</option>
+      <option value="to">Transactions to wallet</option>
+      <option value="all">All transactions</option>
+    </Select>
     {!loading ? <><Accordion allowToggle allowMultiple w="100%">
       {/* @ts-ignore */}
       {txns.length > 0 ? txns.map((txn) => Txn(txn)) : null}
