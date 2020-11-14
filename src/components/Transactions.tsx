@@ -1,8 +1,8 @@
 import React from 'react'
-import { Text, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, SimpleGrid, Box, Heading, Button, Input, Stack, Spinner, IconButton, PopoverTrigger, Popover, PopoverContent, Select, } from '@chakra-ui/core'
+import { Text, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, SimpleGrid, Box, Heading, Button, Input, Stack, Spinner, IconButton, PopoverTrigger, Popover, PopoverContent, Select, Radio, RadioGroup, } from '@chakra-ui/core'
 import WalletContext from '../context/walletContext'
 import { getTxns } from '../providers/wallets'
-import { FaCaretRight, FaSearch } from 'react-icons/fa'
+import { FaCaretLeft, FaCaretRight, FaSearch } from 'react-icons/fa'
 
 const Txn = (txn: any) => {
   return (
@@ -46,18 +46,11 @@ const Transactions = () => {
   const [value, setValue] = React.useState('')
   const [filter, setFilter] = React.useState('')
 
+
   React.useEffect(() => {
     async function getTransactions () {
       setLoading(true)
       switch(filter) {
-      case 'all':
-        let fromTxns = await getTxns({address : state.address})
-        let toTxns = await getTxns({to : state.address})
-        let txns = [...fromTxns, ...toTxns]
-        console.log(txns)
-        //@ts-ignore
-        setTxns(txns)
-        break;
       case 'from':
         let fTxns = await getTxns({address : state.address})
         setTxns(fTxns)
@@ -89,22 +82,27 @@ const Transactions = () => {
     setLoading(true)
     //@ts-ignore
     let cursor = txns[txns.length-1].cursor
-    let txnsWithCursor = await getTxns({ address: state.address, cursor: cursor})
+    let txnsWithCursor
+    filter === 'from' ? txnsWithCursor = await getTxns({ address: state.address, cursor: cursor})
+    :
+    txnsWithCursor = await getTxns({ to: state.address, cursor: cursor})
     setTxns(txnsWithCursor)
     setLoading(false)
   }
 
   return (<Box h="100%">
-    <Select onChange={(evt) => setFilter(evt.target.value)} value={filter} placeholder="Filtering Options">
-      <option value="from">Transactions from wallet</option>
-      <option value="to">Transactions to wallet</option>
-      <option value="all">All transactions</option>
-    </Select>
+    <RadioGroup onChange={(evt) => setFilter(evt.toString())} value={filter} defaultValue="from">
+      <Stack direction="row" spacing={4}>
+        <Radio value="from">From Wallet</Radio>
+        <Radio value="to">To Wallet</Radio>
+      </Stack>
+    </RadioGroup>
     {!loading ? <>
-    <IconButton aria-label="left" icon={<FaCaretRight />} onClick={getTxnsWithCursor}/><Accordion allowToggle allowMultiple w="100%">
+     <Accordion allowToggle allowMultiple w="100%">
       {/* @ts-ignore */}
       {txns.length > 0 ? txns.map((txn) => Txn(txn)) : null}
     </Accordion>
+    <Button my={2} isDisabled={txns.length < 10} leftIcon={<FaCaretRight />} onClick={() => getTxnsWithCursor()}>Next 10</Button>
       <Popover>
         <PopoverTrigger>
           <IconButton position="fixed" bottom="6%" left="5%" aria-label="search transactions" icon={<FaSearch />} />
@@ -131,3 +129,7 @@ const Transactions = () => {
 }
 
 export default Transactions
+
+//    <IconButton aria-label="left" icon={<FaCaretLeft />} onClick={() => getTxnsWithCursor('left')}/>
+//<IconButton aria-label="right" icon={<FaCaretRight />} onClick={() => getTxnsWithCursor('right')}/>
+ 

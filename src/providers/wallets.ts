@@ -27,7 +27,7 @@ export const addWallet = async (wallet: any): Promise<{ address: string, balance
 
 export const getTokens = async (address: string): Promise<any[]> => {
   let arweave = getArweaveInstance()
-  
+
   let res = await axios.post('https://arweave.net/graphql', {
     query: `query {
       transactions(first:20,
@@ -51,7 +51,8 @@ export const getTokens = async (address: string): Promise<any[]> => {
   })
   let tokens = res.data.data.transactions.edges
   let vertoContracts = tokens.map((node: any) => node.node.tags.filter((tag: { name: string, value: string }) => tag.name === "Token")[0].value)
-  res = await axios.post('https://arweave.net:443/graphql',{query:`query {
+  res = await axios.post('https://arweave.net:443/graphql', {
+    query: `query {
       transactions(first:20,
         	owners:["${address}"]
           tags: [{
@@ -71,7 +72,7 @@ export const getTokens = async (address: string): Promise<any[]> => {
       }
   }`})
   console.log('Verto contract interactions', vertoContracts)
-  let smartweaveContracts = res.data.data.transactions.edges.map((edge:any) => edge.node.tags.filter((tag:any) => (tag.name === 'Contract'))[0].value)
+  let smartweaveContracts = res.data.data.transactions.edges.map((edge: any) => edge.node.tags.filter((tag: any) => (tag.name === 'Contract'))[0].value)
   console.log('Generic Smartweave contract interactions', smartweaveContracts)
   let contracts = [...new Set(vertoContracts.concat(smartweaveContracts))]
   let tokenBalances = await Promise.all(contracts.map((contract: any) =>
@@ -82,7 +83,7 @@ export const getTokens = async (address: string): Promise<any[]> => {
       }
       else return null
     })))
-    
+
   return tokenBalances
 }
 
@@ -93,16 +94,15 @@ export interface gQLParams {
   to?: string,
   cursor?: string
 }
-export const getTxns = async ({address = undefined, name = undefined, value = undefined, to = undefined, cursor = undefined}:gQLParams): Promise<any> => {
+
+export const getTxns = async ({ address = undefined, name = undefined, value = undefined, to = undefined, cursor = undefined }: gQLParams): Promise<any> => {
   let searchQuery = `first: 10 
-    ${address ? 'owners:["'+address+'"]' : ''}
+    ${address ? 'owners:["' + address + '"]' : ''}
     ${cursor ? 'after:"' + cursor + '"' : ''} 
     ${name ? 'tags:{name:"' + name + '",values:["' + value + '"]}' : ''}
-    ${to ? 'recipients:  ["' +to + '"]' : ''}`
-  console.log('searchQuery',searchQuery)
-  if (!name && !to)
+    ${to ? 'recipients:  ["' + to + '"]' : ''}`
   return axios.post('https://arweave.net/graphql', {
-      query: `query {
+    query: `query {
                 transactions(${searchQuery}
                  ) {
                   edges {
@@ -126,89 +126,17 @@ export const getTxns = async ({address = undefined, name = undefined, value = un
                   }
                 }
               }`
+  })
+    .then((res) => {
+      console.log(res.data)
+      return res.data.data.transactions.edges
     })
-      .then((res) => {
-        console.log(res.data)
-        return res.data.data.transactions.edges
-      })
     .catch((err) => {
       console.log(err)
       return []
     })
-  else if (!name && to) {
-    return axios.post('https://arweave.net/graphql', {
-      query: `query {
-                transactions(${searchQuery}) {
-                  edges {
-                    cursor
-                    node {
-                      id
-                      owner {
-                        address
-                      }
-                      tags {
-                        name
-                        value
-                      }
-                      fee {
-                        winston
-                        ar
-                      }
-                      quantity {
-                        winston
-                        ar
-                      }
-                    }
-                  }
-                }
-              }`
-    })
-      .then((res) => {
-        console.log(res.data)
-        return res.data.data.transactions.edges
-      })
-    .catch((err) => {
-      console.log(err)
-      return []
-    })
-  }
-  else {
-    return axios.post('https://arweave.net/graphql', {
-      query: `query {
-        transactions(${searchQuery}) {
-          edges {
-            cursor
-            node {
-              id
-              recipient
-              tags {
-                name
-                value
-              }
-              fee {
-                winston
-                ar
-              }
-              quantity {
-                winston
-                ar
-              }
-            }
-          }
-        }
-      }
-      `
-    })
-      .then((res) => {
-        console.log(res.data)
-        return res.data.data.transactions.edges
-      })
-    .catch((err) => {
-      console.log(err)
-      return []
-    })
-  }
 }
+
 
 export const getFee = async (size: number): Promise<string> => {
   let res = await axios.get(`https://arweave.net:443/price/${size}`)
@@ -251,16 +179,16 @@ export const sendTokens = async (contract: string, amount: number, target: strin
       qty: amount,
       function: 'transfer'
     })
-    console.log('Dry-run result is:',res)
+    console.log('Dry-run result is:', res)
     if (res.type === 'ok') {
-     let txId = await interactWrite(arweave, key, contract, {
-      target: target,
-      qty: amount,
-      function: 'transfer'
-    })
-    console.log(res)
-    return txId
-  }
+      let txId = await interactWrite(arweave, key, contract, {
+        target: target,
+        qty: amount,
+        function: 'transfer'
+      })
+      console.log(res)
+      return txId
+    }
     return "success!"
   }
   catch (err) {
@@ -273,8 +201,8 @@ export const uploadFile = async (data: File, key: JWKInterface, tags: { name: st
   try {
     let arweave = getArweaveInstance()
     let buffer = await data.arrayBuffer()
-    let transaction = await arweave.createTransaction({data: buffer}, key)
-    tags.forEach((tag) => transaction.addTag(tag.name,tag.value))
+    let transaction = await arweave.createTransaction({ data: buffer }, key)
+    tags.forEach((tag) => transaction.addTag(tag.name, tag.value))
     await arweave.transactions.sign(transaction, key)
     const response = await arweave.transactions.post(transaction);
     console.log(response);
@@ -292,14 +220,14 @@ export const updateTokens = async (tokens: tokenBalance[], address: string): Pro
     port: 443,
   })
   try {
-  let tokenBalances = await Promise.all(tokens.map((token: tokenBalance) =>
-    readContract(arweave, token.contract).then(contractState => {
-      console.log(contractState)
-      if (contractState.balances)
-      return { 'balance': contractState.balances[address] as number, 'ticker': contractState.ticker as string, 'contract': token.contract, contractState:contractState }
-      else return {'balance':0, 'ticker':'', 'contract':token.contract,contractState:contractState}
-    })))
-  return tokenBalances
+    let tokenBalances = await Promise.all(tokens.map((token: tokenBalance) =>
+      readContract(arweave, token.contract).then(contractState => {
+        console.log(contractState)
+        if (contractState.balances)
+          return { 'balance': contractState.balances[address] as number, 'ticker': contractState.ticker as string, 'contract': token.contract, contractState: contractState }
+        else return { 'balance': 0, 'ticker': '', 'contract': token.contract, contractState: contractState }
+      })))
+    return tokenBalances
   }
   catch (err) {
     console.log('Error updating tokens', err)
@@ -308,5 +236,5 @@ export const updateTokens = async (tokens: tokenBalance[], address: string): Pro
 }
 
 export const generate = async (): Promise<string> => {
-  return (await generateKeyPair('rsa',{modulusLength:4096,format:'raw-pem'})).mnemonic
+  return (await generateKeyPair('rsa', { modulusLength: 4096, format: 'raw-pem' })).mnemonic
 }
