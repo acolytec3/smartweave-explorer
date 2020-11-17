@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, SimpleGrid, Box, Heading, Button, Input, Stack, Spinner, IconButton, PopoverTrigger, Popover, PopoverContent, Select, Radio, RadioGroup, } from '@chakra-ui/core'
 import WalletContext from '../context/walletContext'
 import { getTxns } from '../providers/wallets'
-import { FaCaretLeft, FaCaretRight, FaSearch } from 'react-icons/fa'
+import { FaCaretRight, FaSearch } from 'react-icons/fa'
 
 const Txn = (txn: any) => {
   return (
@@ -25,7 +25,7 @@ const Txn = (txn: any) => {
             <Text fontSize={10}>Amount: </Text>
             <Text fontSize={10}>{txn.node.quantity.ar} AR</Text></React.Fragment>}
         </SimpleGrid>
-        <Heading size="xs" fontSize="12px">Transaction Tags</Heading>
+        {txn.node.tags.length > 0 && <Heading size="xs" fontSize="12px">Transaction Tags</Heading>}
         {txn.node.tags.map((tag: any) => {
           return (<SimpleGrid key={txn.node.id + tag.name} columns={2} textAlign="left" overflow="auto">
             <Text fontSize={10} key={tag.toString()}>{tag.name}</Text>

@@ -23,7 +23,7 @@ A mobile wallet for the permaweb
  ## Roadmap
 - [x] Support data transactions in various forms (file upload, take picture with device camera and post to Arweave, etc)
 - [x] Support custom tags on any/all transactions
-- [ ] Allow transaction history filtering/searching
+- [x] Allow transaction history filtering/searching
 - [ ] Interact with all exposed Smartweave functions
 - [ ] Read and view Smartweave contract state
 - [ ] Expanded PST interactions

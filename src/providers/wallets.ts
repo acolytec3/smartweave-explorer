@@ -79,7 +79,7 @@ export const getTokens = async (address: string): Promise<any[]> => {
     readContract(arweave, contract).then(contractState => {
       console.log(contractState)
       if (contractState.balances) {
-        return { 'balance': contractState.balances[address], 'ticker': contractState.ticker, 'contract': contract }
+        return { 'balance': contractState.balances[address], 'ticker': contractState.ticker, 'contract': contract, contractState: contractState }
       }
       else return null
     })))
@@ -128,7 +128,6 @@ export const getTxns = async ({ address = undefined, name = undefined, value = u
               }`
   })
     .then((res) => {
-      console.log(res.data)
       return res.data.data.transactions.edges
     })
     .catch((err) => {
@@ -237,4 +236,13 @@ export const updateTokens = async (tokens: tokenBalance[], address: string): Pro
 
 export const generate = async (): Promise<string> => {
   return (await generateKeyPair('rsa', { modulusLength: 4096, format: 'raw-pem' })).mnemonic
+}
+
+export const timeLeft = async (block: number): Promise<string> => {
+  let arweave = getArweaveInstance()
+  let res = await arweave.network.getInfo()
+  let timeLeft = (block - res.height)/720
+  if (timeLeft > 1) return `${Math.floor(timeLeft)} more days`
+  else if (timeLeft > 0.041) return `${Math.floor(timeLeft*24)} more hours`
+  else return 'less than 1 hour'
 }

@@ -1,11 +1,15 @@
-import React from 'react'
-import WalletContext, { tokenBalance } from '../context/walletContext'
-import { 
-    Box, Button, Heading, SimpleGrid, Text, Popover, PopoverTrigger, Input, PopoverArrow, PopoverBody, PopoverContent, PopoverCloseButton, PopoverHeader, useToast, FormControl,
-       FormErrorMessage, Spinner, Stack, Divider
+import {
+    Box, Button,
+    Divider, FormControl,
+    FormErrorMessage, Heading, HStack, Icon, Input, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, SimpleGrid,
+    Spinner, Stack, Text, useToast
 } from '@chakra-ui/core'
+import React from 'react'
+import { FaCaretRight } from 'react-icons/fa'
+import WalletContext, { tokenBalance } from '../context/walletContext'
+import { getFee, sendTokens, updateTokens } from '../providers/wallets'
+import PSTDrawer from './PSTDrawer'
 import TransferModal from './TransactionModal'
-import { sendTokens, getFee, updateTokens } from '../providers/wallets'
 
 const AddToken = (props: any) => {
     const { state, dispatch } = React.useContext(WalletContext)
@@ -65,6 +69,8 @@ const Tokens = () => {
     const [fee, setFee] = React.useState('')
     const [loading, setLoading] = React.useState(false)
     const toast = useToast();
+    const [open, setOpen] = React.useState(false)
+    const [currentPST, setPST] = React.useState({})
 
     React.useEffect(() => {
         getFee(new Blob([Math.random().toString().slice(-4)]).size).then((fee) => setFee(fee))
@@ -83,29 +89,33 @@ const Tokens = () => {
         })
     }
 
+    const closePSTDrawer = () => setOpen(false)
+
     return (<Box textAlign="left">
         <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">Address: {state.address}</Text>
-        <SimpleGrid columns={3}>
-            <Text fontWeight="bold">Ticker</Text>
-            <Text fontWeight="bold">Balance</Text>
-        </SimpleGrid>
-        <Divider />
-        <SimpleGrid columns={3} my={2}>
+        <SimpleGrid columns={3} my={2} alignItems="center">
             <Text>AR</Text>
             <Text>{parseFloat(state.balance).toLocaleString(undefined,{maximumFractionDigits: 6})}</Text>
             <Button isDisabled={!state.key} onClick={() => openModal(true)}>Send</Button>
         </SimpleGrid>
+        <Divider my={4} />
+        <Heading align="center" size="sm">Profit Sharing Tokens</Heading>
+        <SimpleGrid columns={4}>
+            <Text fontWeight="bold" minWidth="150px">Ticker</Text>
+            <Text fontWeight="bold">Balance</Text>
+        </SimpleGrid>
+        <Divider />
         {state.tokens?.map((token: tokenBalance) => {
             if (token) {
             return (
-                <SimpleGrid columns={3} my={2}>
-                    <Text>{token.ticker}</Text>
-                    <Text>{token.balance}</Text>
+                <SimpleGrid borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center" onClick={() => {setPST(token.contractState); setOpen(true)}}>
+                    <Text minWidth="150px">{token.ticker}</Text>
+                    <Text minWidth="120px">{token.balance}</Text>
                     <Popover closeOnBlur={false}>
                         {({ onClose }) =>
                             <>
                                 <PopoverTrigger>
-                                    <Button >Send</Button>
+                                    <Button justifySelf="end">Send</Button>
                                 </PopoverTrigger>
                                 <PopoverContent zIndex={4}>
                                     <PopoverArrow />
@@ -136,6 +146,7 @@ const Tokens = () => {
                                 </PopoverContent>
                             </>}
                     </Popover>
+                    <Icon justifySelf="end" as={FaCaretRight}  />
                 </SimpleGrid>
             )
         }})
@@ -155,8 +166,11 @@ const Tokens = () => {
             </PopoverContent>
             </> )}
         </Popover>
+        <PSTDrawer isOpen={open} close={closePSTDrawer} contractState={currentPST} />
     </Box>
     )
 }
 
 export default Tokens
+
+//<Icon position="fixed" right="2px" as={FaCaretRight}  />
