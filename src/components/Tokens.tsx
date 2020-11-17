@@ -108,9 +108,9 @@ const Tokens = () => {
         {state.tokens?.map((token: tokenBalance) => {
             if (token) {
             return (
-                <SimpleGrid borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center" onClick={() => {setPST(token.contractState); setOpen(true)}}>
-                    <Text minWidth="150px">{token.ticker}</Text>
-                    <Text minWidth="120px">{token.balance}</Text>
+                <SimpleGrid borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center">
+                    <Text minWidth="150px" onClick={() => {setPST(token.contractState); setOpen(true)}}>{token.ticker}</Text>
+                    <Text minWidth="120px" onClick={() => {setPST(token.contractState); setOpen(true)}}>{token.balance}</Text>
                     <Popover closeOnBlur={false}>
                         {({ onClose }) =>
                             <>
@@ -146,7 +146,7 @@ const Tokens = () => {
                                 </PopoverContent>
                             </>}
                     </Popover>
-                    <Icon justifySelf="end" as={FaCaretRight}  />
+                    <Icon justifySelf="end" as={FaCaretRight} onClick={() => {setPST(token.contractState); setOpen(true)}} />
                 </SimpleGrid>
             )
         }})
