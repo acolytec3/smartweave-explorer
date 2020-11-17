@@ -26,8 +26,8 @@ A mobile wallet for the permaweb
 - [x] Allow transaction history filtering/searching
 - [ ] Interact with all exposed Smartweave functions
 - [ ] Read and view Smartweave contract state
-- [ ] Expanded PST interactions
-    - [ ] View vaulted balances
+- [x] Expanded PST interactions
+    - [x] View vaulted balances
     - [ ] Integrate Verto buy/sell functionality
 - [ ] Integrate ArweaveID support into wallet
 - [ ] Support storing multiple wallets locally and switching between them
