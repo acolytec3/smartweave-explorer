@@ -16,7 +16,7 @@ import Transactions from './components/Transactions';
 import { SpeedDial, SpeedDialItem } from './components/SpeedDial'
 import Tokens from './components/Tokens';
 import { del, get } from 'idb-keyval'
-import { addWallet, getTokens } from './providers/wallets'
+import { addWallet, getTokens, getBlockHeight } from './providers/wallets'
 import { FaWallet, FaUpload, FaCameraRetro } from 'react-icons/fa';
 import TransactionDrawer from './components/TransactionDrawer'
 import CameraWindow from './components/Camera';
@@ -33,6 +33,10 @@ function App() {
     if (modal === 'txn') setOpen(false);
     if (modal === 'camera') setCamera(false)
   }
+
+  React.useEffect(() => {
+    getBlockHeight().then((res) => dispatch({ type: 'SET_BLOCK_HEIGHT', payload: { blockHeight: res}}))
+  },[])
 
   React.useEffect(() => {
     const loadWallet = async (data: string) => {

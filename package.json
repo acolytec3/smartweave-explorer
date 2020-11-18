@@ -13,6 +13,8 @@
     "@types/react": "^16.9.55",
     "@types/react-dom": "^16.9.9",
     "@types/react-html5-camera-photo": "^1.5.0",
+    "@types/uuid": "^8.3.0",
+    "@verto/lib": "^0.7.1",
     "arweave": "^1.9.1",
     "arweave-mnemonic-keys": "0.0.2",
     "axios": "^0.21.0",

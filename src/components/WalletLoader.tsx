@@ -80,7 +80,7 @@ const WalletLoader = (props: any) => {
     setLoading(true)
     let walletDeets = await addWallet(address);
     let tokens = await getTokens(address);
-    await set('wallet', address)
+   // await set('wallet', address)
     dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '', tokens: tokens } })
     props.onClose();
   }

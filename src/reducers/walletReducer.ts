@@ -29,6 +29,12 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
                 picture: action.payload.picture
             }
         }
+        case 'SET_BLOCK_HEIGHT': {
+            return {
+                ...state,
+                blockHeight: action.payload.blockHeight
+            }
+        }
         default: return state
     }
 }

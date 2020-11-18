@@ -13,6 +13,12 @@ const getArweaveInstance = () => {
   })
 }
 
+export const getBlockHeight = async (): Promise<number> => {
+  let arweave = await getArweaveInstance()
+  let res = await arweave.network.getInfo()
+  return res.height
+}
+
 export const addWallet = async (wallet: any): Promise<{ address: string, balance: string }> => {
   let arweave = getArweaveInstance()
   let address = ''
@@ -238,10 +244,8 @@ export const generate = async (): Promise<string> => {
   return (await generateKeyPair('rsa', { modulusLength: 4096, format: 'raw-pem' })).mnemonic
 }
 
-export const timeLeft = async (block: number): Promise<string> => {
-  let arweave = getArweaveInstance()
-  let res = await arweave.network.getInfo()
-  let timeLeft = (block - res.height)/720
+export const timeLeft = (currentBlock: number, endBlock:number): string => {
+  let timeLeft = (endBlock - currentBlock)/720
   if (timeLeft > 1) return `${Math.floor(timeLeft)} more days`
   else if (timeLeft > 0.041) return `${Math.floor(timeLeft*24)} more hours`
   else return 'less than 1 hour'
