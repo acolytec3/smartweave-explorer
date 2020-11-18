@@ -108,7 +108,7 @@ const Tokens = () => {
         {state.tokens?.map((token: tokenBalance) => {
             if (token) {
             return (
-                <SimpleGrid borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center">
+                <SimpleGrid key={token.contract + 'grid'} borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center">
                     <Text minWidth="150px" onClick={() => {setPST(token.contractState); setOpen(true)}}>{token.ticker}</Text>
                     <Text minWidth="120px" onClick={() => {setPST(token.contractState); setOpen(true)}}>{token.balance}</Text>
                     <Popover closeOnBlur={false}>

@@ -6,9 +6,9 @@ import { FaCaretRight, FaSearch } from 'react-icons/fa'
 
 const Txn = (txn: any) => {
   return (
-    <AccordionItem key={txn.id} textAlign="left">
-      <AccordionButton bg="white" border="1px" borderColor="grey">
-        <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">ID: {txn.node.id}</Text>
+    <AccordionItem key={txn.node.id} textAlign="left">
+      <AccordionButton key={txn.node.id + 'button'} bg="white" border="1px" borderColor="grey">
+        <Text key={txn.node.id + 'display'} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">ID: {txn.node.id}</Text>
         <AccordionIcon />
       </AccordionButton>
       <AccordionPanel border="1px">
