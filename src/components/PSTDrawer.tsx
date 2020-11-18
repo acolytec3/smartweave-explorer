@@ -21,6 +21,7 @@ import {
 } from "@chakra-ui/core";
 import WalletContext from '../context/walletContext'
 import { timeLeft } from '../providers/wallets'
+import { getLatestPrice } from '../providers/verto'
 interface PSTDrawerProps {
     isOpen: boolean,
     close: () => void,
@@ -120,7 +121,7 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
             getVaultTimes(contractState.vault)
         }
     }, [contractState])
-    
+
     return (<>
         {contractState.balances && <Drawer isOpen={isOpen} placement="right" onClose={close} size="full">
             <DrawerOverlay />

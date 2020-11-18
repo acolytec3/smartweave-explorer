@@ -6,7 +6,7 @@ import { generateKeyPair } from 'human-crypto-keys'
 import { tokenBalance } from '../context/walletContext'
 import { JWKInterface } from 'arweave/node/lib/wallet'
 
-const getArweaveInstance = () => {
+export const getArweaveInstance = () => {
   return Arweave.init({
     host: 'arweave.net',
     port: 443,
