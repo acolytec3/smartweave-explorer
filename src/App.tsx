@@ -89,8 +89,7 @@ function App() {
                     </Box>
                     :
                     <Button onClick={onOpen}>Open Wallet</Button>
-                  }
-                  
+                  }   
                 </TabPanel>
                 <TabPanel>
                   {state.address !== '' ?
@@ -112,13 +111,13 @@ function App() {
                   onOpen()
                 }} />}
               {state.address !== '' &&
-                <SpeedDialItem icon={<FaWallet />} label="Close Wallet" clickHandler={async () => {
+                <SpeedDialItem key='fawallet' icon={<FaWallet />} label="Close Wallet" clickHandler={async () => {
                   await del('wallet');
                   dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
                 }} />}
-              {state.key !== '' && <SpeedDialItem icon={<FaUpload />} label="Upload File" clickHandler={() => setOpen(true)} />
+              {state.key && <SpeedDialItem key='faupload' icon={<FaUpload />} label="Upload File" clickHandler={() => setOpen(true)} />
               }
-              {state.key !== '' && <SpeedDialItem icon={<FaCameraRetro />} label="Take Picture" clickHandler={() => setCamera(true)} />}
+              {state.key && <SpeedDialItem key='facameretro' icon={<FaCameraRetro />} label="Take Picture" clickHandler={() => setCamera(true)} />}
             </SpeedDial>
           <WalletModal />
           <TransactionDrawer isOpen={open} close={() => handleClose('txn')} />

@@ -21,7 +21,7 @@ export type walletState = {
     blockHeight?: number
 }
 export const initWalletState: walletState = {
-        key: {} as any,
+        key: null as any,
         balance: '',
         address: ''
 }
