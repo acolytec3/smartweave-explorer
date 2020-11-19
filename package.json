@@ -14,7 +14,7 @@
     "@types/react-dom": "^16.9.9",
     "@types/react-html5-camera-photo": "^1.5.0",
     "@types/uuid": "^8.3.0",
-    "@verto/lib": "https://arweave.net/esw66MjEDtqbQ1Z2Hrr9VMjQZm9h57dvoO9JOBquK3g",
+    "@verto/lib": "file:../lib",
     "arweave": "^1.9.1",
     "arweave-mnemonic-keys": "0.0.2",
     "axios": "^0.21.0",

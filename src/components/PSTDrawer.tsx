@@ -19,9 +19,10 @@ import {
     AccordionItem,
     SimpleGrid
 } from "@chakra-ui/core";
+import VertoWidget from './VertoWidget'
 import WalletContext from '../context/walletContext'
 import { timeLeft } from '../providers/wallets'
-import { getLatestPrice } from '../providers/verto'
+
 interface PSTDrawerProps {
     isOpen: boolean,
     close: () => void,
@@ -76,7 +77,7 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
         }
         setTotal(totalBalance)
     }, [vault])
-
+    
     return (
         <Accordion allowToggle w="100%">
             <AccordionItem>
@@ -105,8 +106,9 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
 const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) => {
     const { state } = React.useContext(WalletContext)
     const [vaultTime, setVault] = React.useState([] as any[])
-
+    
     React.useEffect(() => {
+        console.log(contractState)
         const getVaultTimes = async (vault: any) => {
             let vaultTimes = await Promise.all(vault[state.address].map(async (balance: any) => {
                 let endBlock = balance?.end
@@ -136,6 +138,7 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
                 <DrawerBody>
                     <Stack>
                         <Text>Balance: {contractState.balances[state.address]}</Text>
+                        <VertoWidget contractID={contractState.contractID} ticker={contractState.ticker} />
                         {
                             vaultTime.map((vault: { balance: string, message: string }, index: number) => {
                                 return (<HStack>

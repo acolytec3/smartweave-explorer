@@ -109,8 +109,8 @@ const Tokens = () => {
             if (token) {
             return (
                 <SimpleGrid key={token.contract + 'grid'} borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center">
-                    <Text minWidth="150px" onClick={() => {setPST(token.contractState); setOpen(true)}}>{token.ticker}</Text>
-                    <Text minWidth="120px" onClick={() => {setPST(token.contractState); setOpen(true)}}>{token.balance}</Text>
+                    <Text minWidth="150px" onClick={() => {setPST({...token.contractState, contractID: token.contract}); setOpen(true)}}>{token.ticker}</Text>
+                    <Text minWidth="120px" onClick={() => {setPST({...token.contractState, contractID: token.contract}); setOpen(true)}}>{token.balance}</Text>
                     <Popover closeOnBlur={false}>
                         {({ onClose }) =>
                             <>
@@ -146,7 +146,7 @@ const Tokens = () => {
                                 </PopoverContent>
                             </>}
                     </Popover>
-                    <Icon justifySelf="end" as={FaCaretRight} onClick={() => {setPST(token.contractState); setOpen(true)}} />
+                    <Icon justifySelf="end" as={FaCaretRight} onClick={() => {setPST({...token.contractState, contractID: token.contract}); setOpen(true)}} />
                 </SimpleGrid>
             )
         }})
@@ -170,7 +170,6 @@ const Tokens = () => {
     </Box>
     )
 }
-
 export default Tokens
 
 //<Icon position="fixed" right="2px" as={FaCaretRight}  />
