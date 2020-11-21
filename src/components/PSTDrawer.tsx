@@ -138,7 +138,7 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
                 <DrawerBody>
                     <Stack>
                         <Text>Balance: {contractState.balances[state.address]}</Text>
-                        <VertoWidget contractID={contractState.contractID} ticker={contractState.ticker} />
+                        <VertoWidget contractID={contractState.contractID} ticker={contractState.ticker} balance={contractState.balances[state.address]}/>
                         {
                             vaultTime.map((vault: { balance: string, message: string }, index: number) => {
                                 return (<HStack>

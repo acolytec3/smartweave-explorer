@@ -11,6 +11,7 @@ export const getOpenBuyDeets = async (contractID: string, key: JWKInterface): Pr
     let verto = await getVerto(key)
     let tPosts = await verto.getTradingPosts()
     let config = await verto.getConfig(tPosts[0])
+    verto.getTPTokens(tPosts[0]).then((res) => console.log(res))
     if (config.hasOwnProperty('publicURL')) {
         //@ts-ignore
         let res = await (await (await fetch(`https://${config.publicURL}/orders`))).json()

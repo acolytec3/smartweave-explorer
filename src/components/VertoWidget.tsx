@@ -5,10 +5,11 @@ import { getOpenBuyDeets, getOpenSellDeets, trade } from '../providers/verto';
 
 interface VertoProps {
     contractID: string,
-    ticker: string
+    ticker: string,
+    balance: string
 }
 
-const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker }) => {
+const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker, balance }) => {
     const [loading, setLoading] = React.useState(false)
     const [trades, setTrades] = React.useState({} as any)
     const [purchaseAmount, setAmount] = React.useState('')
@@ -61,7 +62,31 @@ const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker }) => {
     }
 
     const handleSell = async () => {
+        if (sellConvertedAmount === 0) {
+            await calcSalePrice()
+        }
         let res = await trade("Sell", parseInt(sellAmount), state.key, contractID)
+    }
+
+    const calcSalePrice = async () => {
+        let amount = parseInt(sellAmount)
+        if (!amount) {
+            setSellConversion(0)
+            return
+        }
+        let ar = 0
+        trades.sell.rates.every((rate: {amount:number, rate: number}) => {
+            if (amount > rate.amount) {
+                ar+= rate.amount * rate.rate;
+                amount -= rate.amount
+                return true
+            }
+            else {
+                ar+= amount * rate.rate;
+                return false
+            }
+        })
+        setSellConversion(ar)
     }
     
     return (
@@ -89,10 +114,12 @@ const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker }) => {
                     <Text>Total of open orders: {trades.sell.volume} {ticker}</Text>
                     <HStack>
                         <Input placeholder="Enter amount" value={sellAmount}
+                            invalid={parseInt(sellAmount) > parseInt(balance) }
                             onChange={((evt: React.ChangeEvent<HTMLInputElement>) => setSell(evt.target.value))}
+                            onBlur={calcSalePrice}
                             />
                         <Text>Amount in AR: {sellConvertedAmount}</Text>
-                        <Button onClick={handleSell}>Sell</Button>
+                        <Button disabled={parseInt(sellAmount) > parseInt(balance) || parseInt(sellAmount) <=0 } onClick={handleSell}>Sell</Button>
                     </HStack>
                     </>
                     : <Text>No open sell orders</Text>}
