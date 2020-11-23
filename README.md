@@ -4,7 +4,7 @@ A mobile wallet for the permaweb
 
 ## Usage
 
-- Open [ArMob 2.0](https://acolytec3.github.io/ArMob-2.0)
+- Open [ArMob 2.0](https://acolytec3.github.io/armob-2.0)
 - Load Wallet or paste in any Arweave address for read-only wallet view
 - Prosper
 

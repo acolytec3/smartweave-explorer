@@ -1,27 +1,36 @@
 
-import React from 'react'
 import {
-    Drawer,
+    Accordion, AccordionButton,
+
+    AccordionIcon,
+
+    AccordionItem, AccordionPanel, Avatar, Button, Drawer,
     DrawerBody,
-    DrawerFooter,
+
+
+
+
+    DrawerCloseButton, DrawerContent, DrawerFooter,
     DrawerHeader,
     DrawerOverlay,
-    DrawerContent,
-    DrawerCloseButton, Button,
+
+
     HStack,
-    Stack,
-    Text,
-    Avatar,
-    AccordionButton,
-    Accordion,
-    AccordionIcon,
-    AccordionPanel,
-    AccordionItem,
-    SimpleGrid
+
+
+
+
+
+
+
+
+    SimpleGrid, Stack,
+    Text
 } from "@chakra-ui/core";
-import VertoWidget from './VertoWidget'
-import WalletContext from '../context/walletContext'
-import { timeLeft } from '../providers/wallets'
+import React from 'react';
+import WalletContext from '../context/walletContext';
+import { timeLeft } from '../providers/wallets';
+import VertoWidget from './VertoWidget';
 
 interface PSTDrawerProps {
     isOpen: boolean,
@@ -86,7 +95,6 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
                     <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel border="1px">
-
                     {Object.keys(vault).map((key) => {
                         if (vault[key].length > 0)
                             return vault[key].map((balance: any, index: number) => {

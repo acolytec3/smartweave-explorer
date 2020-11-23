@@ -1,25 +1,52 @@
-import React from 'react';
 import {
-  theme, Tabs, TabList, TabPanels, Tab, TabPanel, ChakraProvider, Stack, Box,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
+  Box,
+
+
+
+
+
+
+  Button, ChakraProvider,
+
+
+
+
+
+
+  Heading, Modal,
+
+
+
+
   ModalBody,
-  ModalCloseButton, useDisclosure, Heading, Button, Spinner
-} from '@chakra-ui/core'
-import WalletLoader from './components/WalletLoader'
-import WalletContext, { initWalletState } from './context/walletContext'
-import walletReducer from './reducers/walletReducer'
-import Transactions from './components/Transactions';
-import { SpeedDial, SpeedDialItem } from './components/SpeedDial'
-import Tokens from './components/Tokens';
-import { del, get } from 'idb-keyval'
-import { addWallet, getTokens, getBlockHeight } from './providers/wallets'
-import { FaWallet, FaUpload, FaCameraRetro } from 'react-icons/fa';
-import TransactionDrawer from './components/TransactionDrawer'
+  ModalCloseButton, ModalContent,
+
+  ModalFooter, ModalHeader, ModalOverlay,
+
+
+
+
+  Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, theme,
+
+
+
+
+
+
+  useDisclosure
+} from '@chakra-ui/core';
+import { del, get } from 'idb-keyval';
+import React from 'react';
+import { FaCameraRetro, FaUpload, FaWallet } from 'react-icons/fa';
 import CameraWindow from './components/Camera';
+import { SpeedDial, SpeedDialItem } from './components/SpeedDial';
+import Tokens from './components/Tokens';
+import TransactionDrawer from './components/TransactionDrawer';
+import Transactions from './components/Transactions';
+import WalletLoader from './components/WalletLoader';
+import WalletContext, { initWalletState } from './context/walletContext';
+import { addWallet, getBlockHeight, getTokens } from './providers/wallets';
+import walletReducer from './reducers/walletReducer';
 
 
 function App() {

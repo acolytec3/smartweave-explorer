@@ -1,17 +1,12 @@
 import {
-    Box, Button, Divider, Heading, HStack, Input, Spinner, Text, VStack,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverFooter,
-    PopoverArrow,
-    PopoverCloseButton,
+    Box, Button, Divider, Heading, HStack, Input,
+    Popover, PopoverArrow, PopoverBody,
+    PopoverCloseButton, PopoverContent,
+    PopoverHeader, PopoverTrigger, Spinner, Text, VStack
 } from "@chakra-ui/core";
 import React from 'react';
 import WalletContext from '../context/walletContext';
-import { getOpenBuyDeets, getOpenSellDeets, createTrade, executeTrade } from '../providers/verto';
+import { createTrade, executeTrade, getOpenBuyDeets, getOpenSellDeets } from '../providers/verto';
 
 interface VertoProps {
     contractID: string,
