@@ -89,8 +89,7 @@ export const getTokens = async (address: string): Promise<any[]> => {
       }
       else return null
     })))
-
-  return tokenBalances
+  return tokenBalances.filter((token) => token)
 }
 
 export interface gQLParams {

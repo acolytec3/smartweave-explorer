@@ -1,8 +1,10 @@
 import { walletState, wallet } from '../context/walletContext';
 
 const walletReducer = (state: walletState, action: { type: string, payload: any }): walletState => {
-    console.log('Current state is:', state)
-    console.log('Action requested is:', action)
+    console.log('Current state is:')
+    console.log(state)
+    console.log('Action requested is:')
+    console.log(action)
     switch (action.type) {
         case 'ADD_WALLET': {
             let existingWallets = state.wallets?.filter((wallet: wallet)=> wallet.address === action.payload.address)

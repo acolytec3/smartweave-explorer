@@ -1,7 +1,17 @@
-import { Box, Button, Center, Divider, Heading, HStack, Input, Spinner, Text, VStack } from "@chakra-ui/core";
+import {
+    Box, Button, Divider, Heading, HStack, Input, Spinner, Text, VStack,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverHeader,
+    PopoverBody,
+    PopoverFooter,
+    PopoverArrow,
+    PopoverCloseButton,
+} from "@chakra-ui/core";
 import React from 'react';
 import WalletContext from '../context/walletContext';
-import { getOpenBuyDeets, getOpenSellDeets, trade } from '../providers/verto';
+import { getOpenBuyDeets, getOpenSellDeets, createTrade, executeTrade } from '../providers/verto';
 
 interface VertoProps {
     contractID: string,
@@ -18,25 +28,36 @@ const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker, balance }) => {
     const { state } = React.useContext(WalletContext)
     const [sellAmount, setSell] = React.useState('')
     const [sellConvertedAmount, setSellConversion] = React.useState(0)
+    const [txns, setTxns] = React.useState({} as any)
 
     React.useEffect(() => {
         setLoading(true)
+        let mounted = true
         const getTrades = async () => {
             let buy = await getOpenBuyDeets(contractID, state.key)
             let sell = await getOpenSellDeets(contractID, state.key)
             await setTrades({ buy: buy, sell: sell })
-            setLoading(false)
-            let txns = await trade("Buy", Math.floor(parseFloat(state.balance)), state.key, contractID);
-            setMax(txns.ar)
+            if (mounted) {
+                setLoading(false)
+                let txns = await createTrade("Buy", Math.floor(parseFloat(state.balance)), state.key, contractID);
+                if (mounted) setMax(txns.ar)
+            }
+
         }
         getTrades()
+        return () => {
+            mounted = false
+        }
     }, [])
 
-    const handleBuy = async () => {
+    const createBuy = async () => {
         if (convertedAmount === 0) {
             await calculateAr();
         }
-        let res = await trade("Buy", convertedAmount, state.key, contractID)
+        let res = await createTrade("Buy", convertedAmount, state.key, contractID)
+        await setTxns(res)
+        setAmount('')
+        console.log(txns)
     }
 
     const calculateAr = async () => {
@@ -61,11 +82,20 @@ const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker, balance }) => {
         }
     }
 
-    const handleSell = async () => {
+    const handleOrder = async () => {
+        let res = await executeTrade(txns.txs, state.key)
+        setTxns({})
+        console.log(res)
+    }
+
+    const createSell = async () => {
         if (sellConvertedAmount === 0) {
             await calcSalePrice()
         }
-        let res = await trade("Sell", parseInt(sellAmount), state.key, contractID)
+        let res = await createTrade("Sell", parseInt(sellAmount), state.key, contractID)
+        await setTxns(res)
+        console.log(txns)
+        setSell('')
     }
 
     const calcSalePrice = async () => {
@@ -75,53 +105,94 @@ const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker, balance }) => {
             return
         }
         let ar = 0
-        trades.sell.rates.every((rate: {amount:number, rate: number}) => {
+        trades.sell.rates.every((rate: { amount: number, rate: number }) => {
             if (amount > rate.amount) {
-                ar+= rate.amount * rate.rate;
+                ar += rate.amount * rate.rate;
                 amount -= rate.amount
                 return true
             }
             else {
-                ar+= amount * rate.rate;
+                ar += amount * rate.rate;
                 return false
             }
         })
         setSellConversion(ar)
     }
-    
+
     return (
         <VStack align="center">
             {loading && <Spinner />}
             {!loading && <Box>
-                <Heading size="sm">Buy/Sell {ticker}</Heading>
+                <Heading size="sm">Buy {ticker}</Heading>
                 <Divider />
                 {trades.buy && trades.buy.volume > 0 ? <>
                     <Text>Average Buy Price: {trades.buy.averageRate.toLocaleString(undefined, { maximumFractionDigits: 6 })} {ticker}/AR</Text>
                     <Text>Total Available {ticker}: {trades.buy.volume}</Text>
                     <Text>Total AR you can spend: {maxBuy}</Text>
                     <HStack>
-                        <Input placeholder="Enter amount" value={purchaseAmount}
+                        <Input placeholder="Enter amount" w="50%" value={purchaseAmount}
                             onChange={((evt: React.ChangeEvent<HTMLInputElement>) => setAmount(evt.target.value))}
                             onBlur={calculateAr} />
                         <Text>Cost in AR: {convertedAmount}</Text>
-                        <Button onClick={handleBuy}>Buy</Button>
+                        <Popover closeOnBlur={false}>
+                            {({ onClose }) =>
+                                <>
+                                    <PopoverTrigger><Button onClick={createBuy}>Buy</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverHeader>Order Confirmation</PopoverHeader>
+                                        <PopoverBody>
+                                            <VStack>
+                                                <Text>Transaction Cost: {txns.ar}</Text>
+                                                <Text>{ticker} received: {purchaseAmount}</Text>
+                                                <Text>Wallet balance after transaction: {parseFloat(state.balance) - txns.ar}</Text>
+                                                <Button onClick={() => { handleOrder(); onClose() }}>Submit Order</Button>
+                                            </VStack>
+                                        </PopoverBody>
+                                    </PopoverContent>
+                                </>}
+                        </Popover>
                     </HStack>
                 </>
                     :
                     <Text>No open buy orders</Text>}
+                <Heading size="sm">Sell {ticker}</Heading>
+                <Divider />
                 {trades.sell && trades.sell.volume > 0 ? <>
+
                     <Text>Average Sell Price: {trades.sell.averageRate.toLocaleString(undefined, { maximumFractionDigits: 6 })} {ticker}/AR</Text>
                     <Text>Total of open orders: {trades.sell.volume} {ticker}</Text>
                     <HStack>
                         <Input placeholder="Enter amount" value={sellAmount}
-                            invalid={parseInt(sellAmount) > parseInt(balance) }
+                            invalid={parseInt(sellAmount) > parseInt(balance)}
                             onChange={((evt: React.ChangeEvent<HTMLInputElement>) => setSell(evt.target.value))}
                             onBlur={calcSalePrice}
-                            />
+                        />
                         <Text>Amount in AR: {sellConvertedAmount}</Text>
-                        <Button disabled={parseInt(sellAmount) > parseInt(balance) || parseInt(sellAmount) <=0 } onClick={handleSell}>Sell</Button>
+                        <Popover closeOnBlur={false}>
+                            {({ onClose }) =>
+                                <>
+                                    <PopoverTrigger><Button disabled={parseInt(sellAmount) > parseInt(balance) || parseInt(sellAmount) <= 0} onClick={createSell}>Sell</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverHeader>Order Confirmation</PopoverHeader>
+                                        <PopoverBody>
+                                            <VStack>
+                                                <Text>Transaction Cost: {txns.pst} {ticker}</Text>
+                                                <Text>AR received: {sellConvertedAmount}</Text>
+                                                <Text>Wallet balance after transaction: {parseFloat(state.balance) + sellConvertedAmount}</Text>
+                                                <Button onClick={() => { handleOrder(); onClose() }}>Submit Order</Button>
+                                            </VStack>
+                                        </PopoverBody>
+                                    </PopoverContent>
+                                </>}
+                        </Popover>
                     </HStack>
-                    </>
+                </>
                     : <Text>No open sell orders</Text>}
             </Box>}
         </VStack>
