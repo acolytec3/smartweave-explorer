@@ -223,6 +223,8 @@ export const updateTokens = async (tokens: tokenBalance[], address: string): Pro
     host: 'arweave.net',
     port: 443,
   })
+  readContract(arweave, 's_J499lYQl4B-ERlUiN5NB1yGuNG6-nFWnSJCCt8hiI').then((res) => {console.log('weve contract'); console.log(res)})
+  .catch((err)=>console.log(err))
   try {
     let tokenBalances = await Promise.all(tokens.map((token: tokenBalance) =>
       readContract(arweave, token.contract).then(contractState => {

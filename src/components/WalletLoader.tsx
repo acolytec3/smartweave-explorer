@@ -1,8 +1,8 @@
 import React from 'react';
 import Dropzone from 'react-dropzone'
 import { Box, Button, Input, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
-import { set } from 'idb-keyval'
-import { addWallet, getTokens } from '../providers/wallets'
+import { get, set } from 'idb-keyval'
+import { addWallet, getTokens, updateTokens } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
 import { getKeyFromMnemonic } from 'arweave-mnemonic-keys'
 
@@ -22,7 +22,12 @@ const WalletLoader = (props: any) => {
         try {
           let walletObject = JSON.parse(event!.target!.result as string)
           let walletDeets = await addWallet(walletObject)
-          let tokens = await getTokens(walletDeets.address);
+          let tokenObject = await get('tokens')
+          let tokens
+          if (tokenObject && typeof tokenObject === 'string')
+            tokens = await updateTokens(JSON.parse(tokenObject), walletDeets.address)
+          else  
+            tokens = await getTokens(walletDeets.address);
           await set('wallet', JSON.stringify(walletObject))
           await set('tokens', JSON.stringify(tokens))
           props.onClose();
