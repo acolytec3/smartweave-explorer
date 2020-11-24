@@ -35,7 +35,7 @@ import {
 
   useDisclosure
 } from '@chakra-ui/core';
-import { del, get } from 'idb-keyval';
+import { del, get, set } from 'idb-keyval';
 import React from 'react';
 import { FaCameraRetro, FaUpload, FaWallet } from 'react-icons/fa';
 import CameraWindow from './components/Camera';
@@ -68,9 +68,14 @@ function App() {
   React.useEffect(() => {
     const loadWallet = async (data: string) => {
       let wallet = JSON.parse(data)
-      console.log(JSON.parse(data))
       let walletDeets = await addWallet(wallet)
-      let tokens = await getTokens(walletDeets.address);
+      let tokenData = await get('tokens')
+      let tokens
+      if (tokenData && typeof tokenData === 'string') tokens = JSON.parse(tokenData)
+      else {
+        tokens = await getTokens(walletDeets.address);
+        await set('tokens',JSON.stringify(tokens))
+      }
       dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: wallet, tokens: tokens } })
       setLoading(false)
     }

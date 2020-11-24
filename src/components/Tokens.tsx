@@ -4,6 +4,7 @@ import {
     FormErrorMessage, Heading, Icon, Input, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, SimpleGrid,
     Spinner, Stack, Text, useToast
 } from '@chakra-ui/core'
+import { set } from 'idb-keyval'
 import React from 'react'
 import { FaCaretRight } from 'react-icons/fa'
 import WalletContext, { tokenBalance } from '../context/walletContext'
@@ -28,6 +29,7 @@ const AddToken: React.FC<AddTokenProps> = ({ close }) => {
         tokens.push({ contract: address, balance: 0, ticker: '', contractState: '' })
         let updatedTokens = await updateTokens(tokens, state.address)
         if (updatedTokens) {
+            await set('tokens',JSON.stringify(updatedTokens))
             dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: updatedTokens } })
         }
         else toast({

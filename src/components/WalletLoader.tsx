@@ -24,6 +24,7 @@ const WalletLoader = (props: any) => {
           let walletDeets = await addWallet(walletObject)
           let tokens = await getTokens(walletDeets.address);
           await set('wallet', JSON.stringify(walletObject))
+          await set('tokens', JSON.stringify(tokens))
           props.onClose();
           dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: tokens } })
         }

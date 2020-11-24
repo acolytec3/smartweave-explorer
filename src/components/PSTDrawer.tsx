@@ -114,7 +114,8 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
 const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) => {
     const { state } = React.useContext(WalletContext)
     const [vaultTime, setVault] = React.useState([] as any[])
-    
+    const [logo, setLogo] = React.useState('')
+
     React.useEffect(() => {
         console.log(contractState)
         const getVaultTimes = async (vault: any) => {
@@ -132,6 +133,19 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
         }
     }, [contractState])
 
+    React.useEffect(() => {
+        let url
+        try {
+            url = contractState.settings.find((setting: any) => setting[0] === 'communityLogo')[0][1]
+        }
+        catch (err) {
+            console.log('error loading logo')
+            console.log(err)
+        }
+
+        if (url) setLogo(url)
+    },[contractState])
+
     return (<>
         {contractState.balances && <Drawer isOpen={isOpen} placement="right" onClose={close} size="full">
             <DrawerOverlay />
@@ -140,7 +154,7 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
                 <DrawerHeader >
                     <HStack>
                         <Text>{contractState.ticker}</Text>
-                        <Avatar src={'https://arweave.net/' + contractState.settings.filter((setting: any) => setting[0] === 'communityLogo')[0][1]} />
+                        {logo !== '' && <Avatar src={`https://arweave.net/${logo}`} />}
                     </HStack>
                 </DrawerHeader>
                 <DrawerBody>
