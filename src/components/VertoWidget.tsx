@@ -31,7 +31,7 @@ const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker, balance }) => {
         const getTrades = async () => {
             let buy = await getOpenBuyDeets(contractID, state.key)
             let sell = await getOpenSellDeets(contractID, state.key)
-            await setTrades({ buy: buy, sell: sell })
+            if (mounted) await setTrades({ buy: buy, sell: sell })
             if (mounted) {
                 setLoading(false)
                 let txns = await createTrade("Buy", Math.floor(parseFloat(state.balance)), state.key, contractID);

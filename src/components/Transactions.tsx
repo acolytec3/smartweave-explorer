@@ -1,8 +1,8 @@
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Button, Heading, IconButton, Input, Popover, PopoverContent, PopoverTrigger, Radio, RadioGroup, SimpleGrid, Spinner, Stack, Text } from '@chakra-ui/core'
 import React from 'react'
-import { Text, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, SimpleGrid, Box, Heading, Button, Input, Stack, Spinner, IconButton, PopoverTrigger, Popover, PopoverContent, Select, Radio, RadioGroup, } from '@chakra-ui/core'
+import { FaCaretRight, FaSearch } from 'react-icons/fa'
 import WalletContext from '../context/walletContext'
 import { getTxns } from '../providers/wallets'
-import { FaCaretRight, FaSearch } from 'react-icons/fa'
 
 const Txn = (txn: any) => {
   return (
