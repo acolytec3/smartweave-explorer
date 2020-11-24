@@ -48,11 +48,13 @@ const PSTBalances = (balances: any) => {
     const [total, setTotal] = React.useState(0)
 
     React.useEffect(() => {
+        let mounted = true
         let totalBalance = 0
         for (const [key, value] of Object.entries(balances.balances)) {
             totalBalance += value as number
         }
-        setTotal(totalBalance)
+        if (mounted) setTotal(totalBalance)
+        return () => { mounted = false }
     }, [balances])
 
     return (
@@ -80,11 +82,13 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
     const [total, setTotal] = React.useState(0)
 
     React.useEffect(() => {
+        let mounted = true
         let totalBalance = 0
         for (const [key, value] of Object.entries(vault)) {
             if (value[0]) totalBalance += value[0].balance
         }
-        setTotal(totalBalance)
+        if (mounted) setTotal(totalBalance)
+        return () => {mounted = false}
     }, [vault])
     
     return (
@@ -117,8 +121,10 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
     const [logo, setLogo] = React.useState('')
 
     React.useEffect(() => {
+        let mounted = true
         console.log(contractState)
         const getVaultTimes = async (vault: any) => {
+            if (!mounted) return
             let vaultTimes = await Promise.all(vault[state.address].map(async (balance: any) => {
                 let endBlock = balance?.end
                 if (endBlock) {
@@ -126,11 +132,12 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
                     return { balance: balance.balance, message: message }
                 }
             }))
-            setVault(vaultTimes)
+            if (mounted) setVault(vaultTimes)
         }
         if (contractState.vault && contractState.vault[state.address]) {
             getVaultTimes(contractState.vault)
         }
+        return () => {mounted = false}
     }, [contractState])
 
     React.useEffect(() => {
