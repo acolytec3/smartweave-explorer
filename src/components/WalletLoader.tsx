@@ -22,6 +22,7 @@ const WalletLoader = (props: any) => {
         try {
           let walletObject = JSON.parse(event!.target!.result as string)
           let walletDeets = await addWallet(walletObject)
+          //TODO: decide if this is the right approach to retrieving tokens
           let tokenObject = await get('tokens')
           let tokens
           if (tokenObject && typeof tokenObject === 'string')

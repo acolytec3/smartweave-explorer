@@ -132,7 +132,7 @@ const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker, balance }) => {
                         <Popover closeOnBlur={false}>
                             {({ onClose }) =>
                                 <>
-                                    <PopoverTrigger><Button disabled={!purchaseAmount || parseInt(purchaseAmount) <= 0 || parseInt(purchaseAmount) === NaN} Click={createBuy}>Buy</Button>
+                                    <PopoverTrigger><Button disabled={!purchaseAmount || parseInt(purchaseAmount) <= 0 || parseInt(purchaseAmount) === NaN} onClick={createBuy}>Buy</Button>
                                     </PopoverTrigger>
                                     <PopoverContent>
                                         <PopoverArrow />
