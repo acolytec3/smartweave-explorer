@@ -136,7 +136,8 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
     React.useEffect(() => {
         let url
         try {
-            url = contractState.settings.find((setting: any) => setting[0] === 'communityLogo')[0][1]
+            url = contractState.settings.filter((setting: any) => setting[0] === 'communityLogo')[0][1]
+            setLogo(url)
         }
         catch (err) {
             console.log('error loading logo')
@@ -144,6 +145,7 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
         }
 
         if (url) setLogo(url)
+        return () => { setLogo('')}
     },[contractState])
 
     return (<>
