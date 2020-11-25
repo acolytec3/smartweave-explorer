@@ -15,15 +15,19 @@ export type walletState = {
     key : any,
     balance: string,
     address: string,
-    tokens?: tokenBalance[],
+    tokens: tokenBalance[],
     wallets?: wallet[],
     picture?: string,
-    blockHeight?: number
+    blockHeight?: number,
+    tokenAddresses?: string[]
 }
+
 export const initWalletState: walletState = {
         key: null as any,
         balance: '',
-        address: ''
+        address: '',
+        tokens: [],
+        tokenAddresses: []
 }
 
 const WalletContext = createContext<{state:walletState, dispatch: React.Dispatch<any>}>({state: initWalletState, dispatch: () => null} )

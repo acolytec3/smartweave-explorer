@@ -33,7 +33,6 @@ export const addWallet = async (wallet: any): Promise<{ address: string, balance
 
 export const getTokens = async (address: string): Promise<any[]> => {
   let arweave = getArweaveInstance()
-
   let res = await axios.post('https://arweave.net/graphql', {
     query: `query {
       transactions(first:20,
@@ -80,7 +79,11 @@ export const getTokens = async (address: string): Promise<any[]> => {
   console.log('Verto contract interactions', vertoContracts)
   let smartweaveContracts = res.data.data.transactions.edges.map((edge: any) => edge.node.tags.filter((tag: any) => (tag.name === 'Contract'))[0].value)
   console.log('Generic Smartweave contract interactions', smartweaveContracts)
-  let contracts = [...new Set(vertoContracts.concat(smartweaveContracts))]
+  let communities = await getAllCommunityIds();
+  console.log('all communities')
+  console.log(communities)
+  //let contracts = [...new Set(vertoContracts.concat(smartweaveContracts))]
+  let contracts = communities
   let tokenBalances = await Promise.all(contracts.map((contract: any) =>
     readContract(arweave, contract).then(contractState => {
       console.log(contractState)
@@ -90,6 +93,12 @@ export const getTokens = async (address: string): Promise<any[]> => {
       else return null
     })))
   return tokenBalances.filter((token) => token)
+}
+
+export const getToken = async (contractID: string) : Promise<tokenBalance> => {
+  let arweave = getArweaveInstance()
+  let token = await readContract(arweave, contractID)
+  return { ticker: token.ticker, contract: contractID, contractState: token, balance: 0 }
 }
 
 export interface gQLParams {
@@ -249,4 +258,55 @@ export const timeLeft = (currentBlock: number, endBlock:number): string => {
   if (timeLeft > 1) return `${Math.floor(timeLeft)} more days`
   else if (timeLeft > 0.041) return `${Math.floor(timeLeft*24)} more hours`
   else return 'less than 1 hour'
+}
+
+export const getAllCommunityIds = async (): Promise<string[]> => {
+  let cursor = '';
+  let hasNextPage = true;
+
+  let client = getArweaveInstance()
+
+  const ids: string[] = [];
+  while (hasNextPage) {
+    const query = {
+          query: `
+              query {
+                  transactions(
+                      tags: [
+                          { name: "App-Name", values: ["SmartWeaveContract"] }
+                          {
+                              name: "Contract-Src"
+                              values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI"]
+                          }
+                      ]
+                      after: "${cursor}"
+                      first: 100
+                  ) {
+                      pageInfo {
+                          hasNextPage
+                      }
+                      edges {
+                          cursor
+                          node {
+                              id
+                          }
+                      }
+                  }
+              }            
+          `,
+    };
+    const res = await client.api.post('/graphql', query);
+    const data = res.data;
+
+    for (let i = 0, j = data.data.transactions.edges.length; i < j; i++) {
+          ids.push(data.data.transactions.edges[i].node.id);
+    }
+    hasNextPage = data.data.transactions.pageInfo.hasNextPage;
+
+    if (hasNextPage) {
+          cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
+    }
+  }
+
+  return ids;
 }

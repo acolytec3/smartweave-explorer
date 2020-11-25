@@ -46,7 +46,6 @@ const Transactions = () => {
   const [value, setValue] = React.useState('')
   const [filter, setFilter] = React.useState('')
 
-
   React.useEffect(() => {
     async function getTransactions () {
       setLoading(true)

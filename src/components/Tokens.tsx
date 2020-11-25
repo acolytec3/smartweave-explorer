@@ -23,6 +23,7 @@ const AddToken: React.FC<AddTokenProps> = ({ close }) => {
     const [valid, setValid] = React.useState(true)
     const toast = useToast()
 
+    React.useEffect(()=> setAddress(''),[]  )
     const update = async () => {
         setLoading(true)
         let tokens = [...state.tokens]
@@ -80,7 +81,7 @@ const Tokens = () => {
 
     React.useEffect(() => {
         getFee(new Blob([Math.random().toString().slice(-4)]).size).then((fee) => setFee(fee))
-    })
+    },[])
 
     const initTokenTransfer = async (token: tokenBalance, onClose: any) => {
         setLoading(true)
@@ -112,11 +113,12 @@ const Tokens = () => {
         </SimpleGrid>
         <Divider />
         {state.tokens?.map((token: tokenBalance) => {
-            if (token) {
+            if (token && token.ticker) {
+                let balance = state.tokens!.find((token2) => token.contract === token2.contract)?.contractState.balances[state.address]
                 return (
                     <SimpleGrid key={token.contract + 'grid'} borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center">
                         <Text minWidth="150px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{token.ticker}</Text>
-                        <Text minWidth="120px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{token.balance}</Text>
+                        <Text minWidth="120px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{balance}</Text>
                         <Popover closeOnBlur={false}>
                             {({ onClose }) =>
                                 <>
