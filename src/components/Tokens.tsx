@@ -86,7 +86,8 @@ const Tokens = () => {
     },[])
 
     React.useEffect(() => {
-        if (state.tokens) switch (sortOption) {
+        if (state.address && state.tokens) 
+            switch (sortOption) {
             case 'all': setList(state.tokens.sort((a,b) => b.contractState && (b.contractState.balances[state.address] - a.contractState.balances[state.address]))); break;
             case 'alphabetical': setList(state.tokens.sort((a,b) => {
                 if (!b.contractState && !a.contractState) return 0

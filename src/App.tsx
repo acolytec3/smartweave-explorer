@@ -35,21 +35,25 @@ function App() {
 
   React.useEffect(() => {
     const getTokenDeets = async () => {
-    let token = state.tokens.find((token) => token.contract && token.ticker === '')
-    if (token) {
-      let tokens = state.tokens.filter((token2) => token2.contract !== token!.contract)
-      let tokenDeets = await getToken(token.contract)
-      dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: [...tokens, tokenDeets] } })
-    }}
+      let token = state.tokens.find((token) => token.contract && token.ticker === '')
+      if (token) {
+        try {
+          let tokens = state.tokens.filter((token2) => token2.contract !== token!.contract)
+          let tokenDeets = await getToken(token.contract)
+          dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: [...tokens, tokenDeets] } })
+        }
+        catch (err) { console.log('error loading token'); console.log(err) }
+      }
+    }
     getTokenDeets()
-  },[state.tokens])
+  }, [state.tokens])
 
   React.useEffect(() => {
     const getTokenAddresses = async () => {
       let tokens = await getAllCommunityIds();
       dispatch({ type: 'SET_TOKEN_ADDRESSES', payload: { tokenAddresses: tokens } })
       console.log(state.tokenAddresses)
-      let tokenDeets = tokens.map((address) => { return { ticker: '', contract: address, balance: 0, contractState: null}})
+      let tokenDeets = tokens.map((address) => { return { ticker: '', contract: address, balance: 0, contractState: null } })
       dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: tokenDeets } })
     }
     getTokenAddresses()
