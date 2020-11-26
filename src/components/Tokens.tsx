@@ -79,7 +79,7 @@ const Tokens = () => {
     const [open, setOpen] = React.useState(false)
     const [currentPST, setPST] = React.useState({})
     const [tokenList, setList] = React.useState(state.tokens)
-    const [sortOption, setSort] = React.useState('')
+    const [sortOption, setSort] = React.useState('balances')
 
     React.useEffect(() => {
         getFee(new Blob([Math.random().toString().slice(-4)]).size).then((fee) => setFee(fee))
