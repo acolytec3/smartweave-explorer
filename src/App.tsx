@@ -39,18 +39,10 @@ function App() {
     if (token) {
       let tokens = state.tokens.filter((token2) => token2.contract !== token!.contract)
       let tokenDeets = await getToken(token.contract)
-      let sortedTokens = [...tokens, tokenDeets]
-      sortedTokens.sort((a: tokenBalance, b: tokenBalance) => {
-        console.log(a, b)
-        if (a.balance > b.balance) return 1
-        if (a.balance < b.balance) return -1
-        if (a.ticker > b.ticker) return 1
-        if (a.ticker < b.ticker) return -1
-        return 0
-      })
-
-      console.log(sortedTokens)
-      dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: sortedTokens } })
+      if (state.address) {
+        tokenDeets.balance = tokenDeets.contractState.balances[state.address]
+      }
+      dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: [...tokens, tokenDeets] } })
     }}
     getTokenDeets()
   },[state.tokens])
@@ -58,7 +50,7 @@ function App() {
   React.useEffect(() => {
     const getTokenAddresses = async () => {
       let tokens = await getAllCommunityIds();
-      await dispatch({ type: 'SET_TOKEN_ADDRESSES', payload: { tokenAddresses: tokens } })
+      dispatch({ type: 'SET_TOKEN_ADDRESSES', payload: { tokenAddresses: tokens } })
       console.log(state.tokenAddresses)
       let tokenDeets = tokens.map((address) => { return { ticker: '', contract: address, balance: 0, contractState: null}})
       dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: tokenDeets } })

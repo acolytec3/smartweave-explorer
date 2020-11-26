@@ -78,7 +78,7 @@ const Tokens = () => {
     const toast = useToast();
     const [open, setOpen] = React.useState(false)
     const [currentPST, setPST] = React.useState({})
-
+    
     React.useEffect(() => {
         getFee(new Blob([Math.random().toString().slice(-4)]).size).then((fee) => setFee(fee))
     },[])
@@ -114,11 +114,10 @@ const Tokens = () => {
         <Divider />
         {state.tokens?.map((token: tokenBalance) => {
             if (token && token.ticker) {
-                let balance = state.tokens!.find((token2) => token.contract === token2.contract)?.contractState.balances[state.address]
                 return (
                     <SimpleGrid key={token.contract + 'grid'} borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center">
                         <Text minWidth="150px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{token.ticker}</Text>
-                        <Text minWidth="120px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{balance}</Text>
+                        <Text minWidth="120px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{token.balance}</Text>
                         <Popover closeOnBlur={false}>
                             {({ onClose }) =>
                                 <>
