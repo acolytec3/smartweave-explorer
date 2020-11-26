@@ -12,7 +12,7 @@ import Tokens from './components/Tokens';
 import TransactionDrawer from './components/TransactionDrawer';
 import Transactions from './components/Transactions';
 import WalletLoader from './components/WalletLoader';
-import WalletContext, { initWalletState, tokenBalance } from './context/walletContext';
+import WalletContext, { initWalletState, token } from './context/walletContext';
 import { addWallet, getBlockHeight, getAllCommunityIds, getToken } from './providers/wallets';
 import walletReducer from './reducers/walletReducer';
 
@@ -39,10 +39,6 @@ function App() {
     if (token) {
       let tokens = state.tokens.filter((token2) => token2.contract !== token!.contract)
       let tokenDeets = await getToken(token.contract)
-      if (state.address) {
-        tokenDeets.balance = tokenDeets.contractState.balances[state.address] ?
-        tokenDeets.contractState.balances[state.address]:0
-      }
       dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: [...tokens, tokenDeets] } })
     }}
     getTokenDeets()

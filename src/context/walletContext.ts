@@ -1,8 +1,7 @@
 import { createContext } from 'react'
 
-export type tokenBalance = {
+export type token = {
     ticker: string,
-    balance: number,
     contract: string,
     contractState: any
 }
@@ -15,7 +14,7 @@ export type walletState = {
     key : any,
     balance: string,
     address: string,
-    tokens: tokenBalance[],
+    tokens: token[],
     wallets?: wallet[],
     picture?: string,
     blockHeight?: number,

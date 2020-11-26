@@ -1,9 +1,10 @@
 import Arweave from 'arweave'
 import axios from 'axios'
-import { readContract, interactWriteDryRun, interactWrite } from 'smartweave'
+import { interactWriteDryRun, interactWrite } from 'smartweave'
+import { getContract } from 'cacheweave'
 //@ts-ignore
 import { generateKeyPair } from 'human-crypto-keys'
-import { tokenBalance } from '../context/walletContext'
+import { token } from '../context/walletContext'
 import { JWKInterface } from 'arweave/node/lib/wallet'
 
 export const getArweaveInstance = () => {
@@ -85,7 +86,7 @@ export const getTokens = async (address: string): Promise<any[]> => {
   //let contracts = [...new Set(vertoContracts.concat(smartweaveContracts))]
   let contracts = communities
   let tokenBalances = await Promise.all(contracts.map((contract: any) =>
-    readContract(arweave, contract).then(contractState => {
+    getContract(arweave, contract).then(contractState => {
       console.log(contractState)
       if (contractState.balances) {
         return { 'balance': contractState.balances[address], 'ticker': contractState.ticker, 'contract': contract, contractState: contractState }
@@ -95,10 +96,10 @@ export const getTokens = async (address: string): Promise<any[]> => {
   return tokenBalances.filter((token) => token)
 }
 
-export const getToken = async (contractID: string) : Promise<tokenBalance> => {
+export const getToken = async (contractID: string) : Promise<token> => {
   let arweave = getArweaveInstance()
-  let token = await readContract(arweave, contractID)
-  return { ticker: token.ticker, contract: contractID, contractState: token, balance: 0 }
+  let token = await getContract(arweave, contractID)
+  return { ticker: token.ticker, contract: contractID, contractState: token }
 }
 
 export interface gQLParams {
@@ -227,19 +228,19 @@ export const uploadFile = async (data: File, key: JWKInterface, tags: { name: st
   return 'Transaction submitted successfully'
 }
 
-export const updateTokens = async (tokens: tokenBalance[], address: string): Promise<tokenBalance[] | false> => {
+export const updateTokens = async (tokens: token[], address: string): Promise<token[] | false> => {
   let arweave = Arweave.init({
     host: 'arweave.net',
     port: 443,
   })
 
   try {
-    let tokenBalances = await Promise.all(tokens.map((token: tokenBalance) =>
-      readContract(arweave, token.contract).then(contractState => {
+    let tokenBalances = await Promise.all(tokens.map((token: token) =>
+      getContract(arweave, token.contract).then(contractState => {
         console.log(contractState)
         if (contractState.balances)
-          return { 'balance': contractState.balances[address] as number, 'ticker': contractState.ticker as string, 'contract': token.contract, contractState: contractState }
-        else return { 'balance': 0, 'ticker': '', 'contract': token.contract, contractState: contractState }
+          return { 'ticker': contractState.ticker as string, 'contract': token.contract, contractState: contractState }
+        else return { 'ticker': '', 'contract': token.contract, contractState: contractState }
       })))
     return tokenBalances
   }

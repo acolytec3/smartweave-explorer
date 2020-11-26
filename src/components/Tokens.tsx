@@ -7,7 +7,7 @@ import {
 import { set } from 'idb-keyval'
 import React from 'react'
 import { FaCaretRight } from 'react-icons/fa'
-import WalletContext, { tokenBalance } from '../context/walletContext'
+import WalletContext, { token } from '../context/walletContext'
 import { getFee, sendTokens, updateTokens } from '../providers/wallets'
 import PSTDrawer from './PSTDrawer'
 import TransferModal from './TransactionModal'
@@ -27,7 +27,7 @@ const AddToken: React.FC<AddTokenProps> = ({ close }) => {
     const update = async () => {
         setLoading(true)
         let tokens = [...state.tokens]
-        tokens.push({ contract: address, balance: 0, ticker: '', contractState: '' })
+        tokens.push({ contract: address, ticker: '', contractState: '' })
         let updatedTokens = await updateTokens(tokens, state.address)
         if (updatedTokens) {
             await set('tokens',JSON.stringify(updatedTokens))
@@ -86,22 +86,22 @@ const Tokens = () => {
     },[])
 
     React.useEffect(() => {
-        switch (sortOption) {
-            case 'all': setList(state.tokens.sort((a,b) => b.balance - a.balance)); break;
+        if (state.tokens) switch (sortOption) {
+            case 'all': setList(state.tokens.sort((a,b) => b.contractState && (b.contractState.balances[state.address] - a.contractState.balances[state.address]))); break;
             case 'alphabetical': setList(state.tokens.sort((a,b) => {
+                if (!b.contractState && !a.contractState) return 0
                 let fa= a.ticker.toUpperCase() 
                 let fb = b.ticker.toUpperCase()
                 if (fa > fb) return 1
                 if (fb > fa) return -1
                 return 0
             })); break;
-
-            case 'balances': setList(state.tokens.filter((token) => token.balance > 0)); break;
+            case 'balances': setList(state.tokens.filter((token) => token && token.contractState && token.contractState.balances[state.address] > 0)); break;
             default: setList(state.tokens)
         }
     },[state.tokens, sortOption])
 
-    const initTokenTransfer = async (token: tokenBalance, onClose: any) => {
+    const initTokenTransfer = async (token: token, onClose: any) => {
         setLoading(true)
         let message = await sendTokens(token.contract, amount, to, state.key)
         setLoading(false)
@@ -135,12 +135,12 @@ const Tokens = () => {
             <Text fontWeight="bold">Balance</Text>
         </SimpleGrid>
         <Divider />
-        {tokenList.map((token: tokenBalance) => {
+        {tokenList.map((token: token) => {
             if (token && token.ticker) {
                 return (
                     <SimpleGrid key={token.contract + 'grid'} borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center">
                         <Text minWidth="150px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{token.ticker}</Text>
-                        <Text minWidth="120px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{token.balance}</Text>
+                        <Text minWidth="120px" onClick={() => { setPST({ ...token.contractState, contractID: token.contract }); setOpen(true) }}>{token.contractState.balances[state.address]}</Text>
                         <Popover closeOnBlur={false}>
                             {({ onClose }) =>
                                 <>

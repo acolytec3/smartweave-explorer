@@ -143,7 +143,8 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
     React.useEffect(() => {
         let url
         try {
-            url = contractState.settings.filter((setting: any) => setting[0] === 'communityLogo')[0][1]
+            if (contractState.settings)
+                url = contractState.settings.filter((setting: any) => setting[0] === 'communityLogo')[0][1]
             setLogo(url)
         }
         catch (err) {

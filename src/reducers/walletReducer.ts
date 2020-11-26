@@ -1,4 +1,4 @@
-import { walletState, wallet, tokenBalance } from '../context/walletContext';
+import { walletState, wallet, token } from '../context/walletContext';
 
 const walletReducer = (state: walletState, action: { type: string, payload: any }): walletState => {
     console.log('Current state is:')
