@@ -40,7 +40,8 @@ function App() {
       let tokens = state.tokens.filter((token2) => token2.contract !== token!.contract)
       let tokenDeets = await getToken(token.contract)
       if (state.address) {
-        tokenDeets.balance = tokenDeets.contractState.balances[state.address]
+        tokenDeets.balance = tokenDeets.contractState.balances[state.address] ?
+        tokenDeets.contractState.balances[state.address]:0
       }
       dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: [...tokens, tokenDeets] } })
     }}

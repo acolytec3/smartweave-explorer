@@ -1,7 +1,7 @@
 import {
     Box, Button,
     Divider, FormControl,
-    FormErrorMessage, Heading, Icon, Input, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, SimpleGrid,
+    FormErrorMessage, Heading, Icon, Input, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Select, SimpleGrid,
     Spinner, Stack, Text, useToast
 } from '@chakra-ui/core'
 import { set } from 'idb-keyval'
@@ -78,10 +78,28 @@ const Tokens = () => {
     const toast = useToast();
     const [open, setOpen] = React.useState(false)
     const [currentPST, setPST] = React.useState({})
-    
+    const [tokenList, setList] = React.useState(state.tokens)
+    const [sortOption, setSort] = React.useState('')
+
     React.useEffect(() => {
         getFee(new Blob([Math.random().toString().slice(-4)]).size).then((fee) => setFee(fee))
     },[])
+
+    React.useEffect(() => {
+        switch (sortOption) {
+            case 'all': setList(state.tokens.sort((a,b) => b.balance - a.balance)); break;
+            case 'alphabetical': setList(state.tokens.sort((a,b) => {
+                let fa= a.ticker.toUpperCase() 
+                let fb = b.ticker.toUpperCase()
+                if (fa > fb) return 1
+                if (fb > fa) return -1
+                return 0
+            })); break;
+
+            case 'balances': setList(state.tokens.filter((token) => token.balance > 0)); break;
+            default: setList(state.tokens)
+        }
+    },[state.tokens, sortOption])
 
     const initTokenTransfer = async (token: tokenBalance, onClose: any) => {
         setLoading(true)
@@ -107,12 +125,17 @@ const Tokens = () => {
         </SimpleGrid>
         <Divider my={4} />
         <Heading align="center" size="sm">Profit Sharing Tokens</Heading>
+        <Select placeholder="Filtering options" value={sortOption} onChange={(evt) => setSort(evt.target.value)}>
+            <option value="all">All tokens</option>
+            <option value="balances">Tokens with balances</option>
+            <option value="alphabetical">Alphabetical</option>
+        </Select>
         <SimpleGrid columns={4}>
             <Text fontWeight="bold" minWidth="150px">Ticker</Text>
             <Text fontWeight="bold">Balance</Text>
         </SimpleGrid>
         <Divider />
-        {state.tokens?.map((token: tokenBalance) => {
+        {tokenList.map((token: tokenBalance) => {
             if (token && token.ticker) {
                 return (
                     <SimpleGrid key={token.contract + 'grid'} borderY="1px" borderColor="lightgray" columns={4} my={2} py={1} alignItems="center">
