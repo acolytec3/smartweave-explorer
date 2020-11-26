@@ -88,8 +88,7 @@ const Tokens = () => {
     React.useEffect(() => {
         if (state.address && state.tokens) 
             switch (sortOption) {
-            case 'all': setList(state.tokens.sort((a,b) => b.contractState && (b.contractState.balances[state.address] - a.contractState.balances[state.address]))); break;
-            case 'alphabetical': setList(state.tokens.sort((a,b) => {
+            case 'all': setList(state.tokens.sort((a,b) => {
                 if (!b.contractState && !a.contractState) return 0
                 let fa= a.ticker.toUpperCase() 
                 let fb = b.ticker.toUpperCase()
@@ -129,7 +128,6 @@ const Tokens = () => {
         <Select placeholder="Filtering options" value={sortOption} onChange={(evt) => setSort(evt.target.value)}>
             <option value="all">All tokens</option>
             <option value="balances">Tokens with balances</option>
-            <option value="alphabetical">Alphabetical</option>
         </Select>
         <SimpleGrid columns={4}>
             <Text fontWeight="bold" minWidth="150px">Ticker</Text>
