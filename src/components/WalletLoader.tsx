@@ -7,7 +7,7 @@ import WalletContext from '../context/walletContext'
 import { getKeyFromMnemonic } from 'arweave-mnemonic-keys'
 import { FaCheck, FaTrash } from 'react-icons/fa';
 
-const WalletLoader = (props: any) => {
+const WalletLoader = () => {
   const toast = useToast()
   const { state, dispatch } = React.useContext(WalletContext)
   const [loading, setLoading] = React.useState(false)
@@ -24,7 +24,6 @@ const WalletLoader = (props: any) => {
           let walletObject = JSON.parse(event!.target!.result as string)
           let walletDeets = await addWallet(walletObject)
           await set('wallet', JSON.stringify(walletObject))
-          //props.onClose();
           dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject } })
         }
         catch (err) {
@@ -71,16 +70,13 @@ const WalletLoader = (props: any) => {
     let walletDeets = await addWallet(walletObject);
     await set('wallet', JSON.stringify(walletObject))
     setLoading(false)
-    props.onClose();
     dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: [] } })
   }
 
   const addAddress = async () => {
     setLoading(true)
     let walletDeets = await addWallet(address);
-    // await set('wallet', address)
     dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '', tokens: [] } })
-    props.onClose();
   }
 
   const switchWallet = async (address: string) => {

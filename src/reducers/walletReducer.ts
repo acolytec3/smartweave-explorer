@@ -53,7 +53,7 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
         }
         case 'REMOVE_WALLET': {
             let wallets = state.wallets.filter((wallet) => wallet.address !== action.payload.address)
-            if (wallets)
+            if (wallets.length > 0)
             return {
                 ...state,
                 wallets: wallets,

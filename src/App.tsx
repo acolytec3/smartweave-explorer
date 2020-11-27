@@ -19,7 +19,6 @@ import walletReducer from './reducers/walletReducer';
 
 function App() {
   const [state, dispatch] = React.useReducer(walletReducer, initWalletState)
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [open, setOpen] = React.useState(false)
   const [openCamera, setCamera] = React.useState(false)
   const [loading, setLoading] = React.useState(true)
@@ -61,7 +60,7 @@ function App() {
     }
 
     getTokenDeets()
-  }, [state.tokenAddresses])
+  }, [state.tokenAddresses, state.address])
 
   React.useEffect(() => {
     const getTokenAddresses = async () => {
@@ -90,22 +89,6 @@ function App() {
     })
   }, [])
 
-  const WalletModal = () => {
-    return (<Modal isCentered isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Load Wallet</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <WalletLoader onClose={onClose} />
-        </ModalBody>
-        <ModalFooter>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-    )
-  }
-
   return (
     <WalletContext.Provider value={{ dispatch, state }}>
       <ChakraProvider theme={theme}>
@@ -118,44 +101,30 @@ function App() {
               </TabPanel>
               <TabPanel>
                 {loading ? <Spinner position="fixed" bottom="50%" right="50%" /> :
-                  state.address !== '' ?
-                    <Box>
-                      <Tokens />
-                    </Box>
-                    :
-                    <Button onClick={onOpen}>Open Wallet</Button>
+                  state.address !== '' &&
+                  <Box>
+                    <Tokens />
+                  </Box>
                 }
               </TabPanel>
               <TabPanel>
-                {state.address !== '' ?
+                {state.address !== '' &&
                   <Transactions />
-                  :
-                  <Button onClick={onOpen}>Open Wallet</Button>
                 }
               </TabPanel>
             </TabPanels>
             <TabList position="fixed" bottom="0px" left="0px" w="100vw">
               <Tab>Wallet</Tab>
-              <Tab>Tokens</Tab>
-              <Tab>Transactions</Tab>
+              <Tab isDisabled={state.address === ''}>Tokens</Tab>
+              <Tab isDisabled={state.address === ''}>Transactions</Tab>
             </TabList>
           </Tabs>
         </Stack>
-        <SpeedDial>
-          {state.address === '' &&
-            <SpeedDialItem icon={<FaWallet />} label="Open Wallet" clickHandler={() => {
-              onOpen()
-            }} />}
-          {state.address !== '' &&
-            <SpeedDialItem key='fawallet' icon={<FaWallet />} label="Close Wallet" clickHandler={async () => {
-              await del('wallet');
-              dispatch({ type: 'ADD_WALLET', payload: { address: '', balance: '', key: '' } });
-            }} />}
+        {state.key && <SpeedDial>
           {state.key && <SpeedDialItem key='faupload' icon={<FaUpload />} label="Upload File" clickHandler={() => setOpen(true)} />
           }
           {state.key && <SpeedDialItem key='facameretro' icon={<FaCameraRetro />} label="Take Picture" clickHandler={() => setCamera(true)} />}
-        </SpeedDial>
-        <WalletModal />
+        </SpeedDial>}
         <TransactionDrawer isOpen={open} close={() => handleClose('txn')} />
         <CameraWindow isOpen={openCamera} close={() => handleClose('camera')} setTxnOpen={() => setOpen(true)} />
       </ChakraProvider>
