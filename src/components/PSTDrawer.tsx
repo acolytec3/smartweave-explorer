@@ -1,31 +1,8 @@
 
 import {
-    Accordion, AccordionButton,
-
-    AccordionIcon,
-
-    AccordionItem, AccordionPanel, Avatar, Button, Drawer,
-    DrawerBody,
-
-
-
-
-    DrawerCloseButton, DrawerContent, DrawerFooter,
-    DrawerHeader,
-    DrawerOverlay,
-
-
-    HStack,
-
-
-
-
-
-
-
-
-    SimpleGrid, Stack,
-    Text
+    Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Avatar, Box, Button, Drawer,
+    DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack,
+    Stack, Text
 } from "@chakra-ui/core";
 import React from 'react';
 import WalletContext from '../context/walletContext';
@@ -88,9 +65,9 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
             if (value[0]) totalBalance += value[0].balance
         }
         if (mounted) setTotal(totalBalance)
-        return () => {mounted = false}
+        return () => { mounted = false }
     }, [vault])
-    
+
     return (
         <Accordion allowToggle w="100%">
             <AccordionItem>
@@ -102,11 +79,11 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
                     {Object.keys(vault).map((key) => {
                         if (vault[key].length > 0)
                             return vault[key].map((balance: any, index: number) => {
-                                return (<SimpleGrid w="100%" col={3} key={key + index} fontSize={12}>
-                                    <Text key={key} maxWidth="200px" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">{key}:</Text>
-                                    <Text key={balance.toString()}>{balance.balance}</Text>
-                                    <Text key={balance.start + balance.end + key}>{balance.end}</Text>
-                                </SimpleGrid>)
+                                return (<Box key={key + index} fontSize={12}>
+                                    <Text key={key} maxWidth="100%" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">Address: {key}</Text>
+                                    <HStack><Text key={balance.toString()}>Balance: {balance.balance}</Text>
+                                    <Text key={balance.start + balance.end + key}>End Block: {balance.end}</Text></HStack>
+                                </Box>)
                             })
                     })
                     }
@@ -137,7 +114,7 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
         if (contractState.vault && contractState.vault[state.address]) {
             getVaultTimes(contractState.vault)
         }
-        return () => {mounted = false}
+        return () => { mounted = false }
     }, [contractState])
 
     React.useEffect(() => {
@@ -153,8 +130,8 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
         }
 
         if (url) setLogo(url)
-        return () => { setLogo('')}
-    },[contractState])
+        return () => { setLogo('') }
+    }, [contractState])
 
     return (<>
         {contractState.balances && <Drawer isOpen={isOpen} placement="right" onClose={close} size="full">
@@ -170,15 +147,15 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
                 <DrawerBody>
                     <Stack>
                         <Text>Balance: {contractState.balances[state.address]}</Text>
-                        <VertoWidget contractID={contractState.contractID} ticker={contractState.ticker} balance={contractState.balances[state.address]}/>
                         {
                             vaultTime.map((vault: { balance: string, message: string }, index: number) => {
                                 return (<HStack>
-                                    <Text key={index+vault.toString()}>Vaulted Balance: {vault.balance}</Text>
-                                    <Text key={index+vault.message}>{vault.message}</Text>
+                                    <Text key={index + vault.toString()}>Vaulted Balance: {vault.balance}</Text>
+                                    <Text key={index + vault.message}>{vault.message}</Text>
                                 </HStack>)
                             })
                         }
+                        <VertoWidget contractID={contractState.contractID} ticker={contractState.ticker} balance={contractState.balances[state.address]} />
                     </Stack>
                     {contractState.balances && <PSTBalances balances={contractState.balances} />}
                     {contractState.vault && <PSTVault vault={contractState.vault} />}
