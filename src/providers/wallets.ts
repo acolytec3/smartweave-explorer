@@ -26,74 +26,7 @@ export const addWallet = async (wallet: any): Promise<{ address: string, balance
   if (typeof wallet === "string") address = wallet;
   else address = await arweave.wallets.jwkToAddress(wallet)
   let balance = arweave.ar.winstonToAr(await arweave.wallets.getBalance(address))
-  console.log(address);
-  console.log(balance);
-
   return { address, balance }
-}
-
-export const getTokens = async (address: string): Promise<any[]> => {
-  let arweave = getArweaveInstance()
-  let res = await axios.post('https://arweave.net/graphql', {
-    query: `query {
-      transactions(first:20,
-          owners:["${address}"],
-          tags: [{
-              name: "Exchange",
-            values:["Verto"]
-          }, {name:"Type", values:["Buy", "Sell"]}]
-      ) {
-          edges {
-              node {
-                  id
-                  tags {
-                    name
-                    value
-                  }
-              }
-          }
-      }
-  }`
-  })
-  let tokens = res.data.data.transactions.edges
-  let vertoContracts = tokens.map((node: any) => node.node.tags.filter((tag: { name: string, value: string }) => tag.name === "Token")[0].value)
-  res = await axios.post('https://arweave.net:443/graphql', {
-    query: `query {
-      transactions(first:20,
-        	owners:["${address}"]
-          tags: [{
-              name: "App-Name",
-            values:["SmartWeaveAction"]
-          }]
-      ) {
-          edges {
-              node {
-                  id
-                  tags {
-                    name
-                    value
-                  }
-              }
-          }
-      }
-  }`})
-  console.log('Verto contract interactions', vertoContracts)
-  let smartweaveContracts = res.data.data.transactions.edges.map((edge: any) => edge.node.tags.filter((tag: any) => (tag.name === 'Contract'))[0].value)
-  console.log('Generic Smartweave contract interactions', smartweaveContracts)
-  let communities = await getAllCommunityIds();
-  console.log('all communities')
-  console.log(communities)
-  //let contracts = [...new Set(vertoContracts.concat(smartweaveContracts))]
-  let contracts = communities
-  let tokenBalances = await Promise.all(contracts.map((contract: any) =>
-    getContract(arweave, contract).then(contractState => {
-      console.log(contractState)
-      if (contractState.balances) {
-        return { 'balance': contractState.balances[address], 'ticker': contractState.ticker, 'contract': contract, contractState: contractState }
-      }
-      else return null
-    })))
-  return tokenBalances.filter((token) => token)
 }
 
 export const getToken = async (contractID: string) : Promise<token> => {

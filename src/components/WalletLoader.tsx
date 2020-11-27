@@ -1,14 +1,15 @@
 import React from 'react';
 import Dropzone from 'react-dropzone'
-import { Box, Button, Input, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
-import { get, set } from 'idb-keyval'
-import { addWallet, getTokens, updateTokens, getAllCommunityIds } from '../providers/wallets'
+import { Box, Button, Divider, Heading, Input, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
+import { set } from 'idb-keyval'
+import { addWallet } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
 import { getKeyFromMnemonic } from 'arweave-mnemonic-keys'
+import { FaCheck, FaTrash } from 'react-icons/fa';
 
 const WalletLoader = (props: any) => {
   const toast = useToast()
-  const { dispatch } = React.useContext(WalletContext)
+  const { state, dispatch } = React.useContext(WalletContext)
   const [loading, setLoading] = React.useState(false)
   const [address, setAddress] = React.useState('')
 
@@ -23,7 +24,7 @@ const WalletLoader = (props: any) => {
           let walletObject = JSON.parse(event!.target!.result as string)
           let walletDeets = await addWallet(walletObject)
           await set('wallet', JSON.stringify(walletObject))
-          props.onClose();
+          //props.onClose();
           dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject } })
         }
         catch (err) {
@@ -68,22 +69,24 @@ const WalletLoader = (props: any) => {
     setLoading(true)
     let walletObject = await getKeyFromMnemonic(mnemonic);
     let walletDeets = await addWallet(walletObject);
-    let tokens = await getTokens(walletDeets.address);
     await set('wallet', JSON.stringify(walletObject))
     setLoading(false)
     props.onClose();
-    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: tokens } })
+    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: [] } })
   }
 
   const addAddress = async () => {
     setLoading(true)
     let walletDeets = await addWallet(address);
-    let tokens = await getTokens(address);
-   // await set('wallet', address)
-    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '', tokens: tokens } })
+    // await set('wallet', address)
+    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '', tokens: [] } })
     props.onClose();
   }
 
+  const switchWallet = async (address: string) => {
+    let wallet = await addWallet(address)
+    dispatch({ type: 'CHANGE_ACTIVE_WALLET', payload: { address: wallet.address, balance: wallet.balance } })
+  }
   return (<Stack align="center">
     {loading ? <Spinner /> :
       <Box w="100%" borderStyle='dashed' borderWidth="2px">
@@ -107,8 +110,28 @@ const WalletLoader = (props: any) => {
       <Input w="93%%" placeholder="Read-only wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
       <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
     </Stack>}
-  </Stack>
-  )
-}
+    {state.address && <>
+      <Divider />
+      <Heading size="sm">Loaded Wallets</Heading>
+    </>}
+    {state.wallets.length > 0 && state.wallets.map((wallet) => {
+      console.log(wallet)
+      return (<Stack isInline align="start">
+        <Text whiteSpace="nowrap" overflow="hidden" maxWidth="200px" textOverflow="ellipsis">Address: {wallet.address}</Text>
+        <Stack isInline justifyContent="space-around">
+          <Box key={wallet.address + 'pseudo2'} as="button" onClick={() => {
+            switchWallet(wallet.address) }}
+            alignContent="start">
+            <FaCheck size={16} />
+            <Text>Use</Text></Box>
+          <Box as="button" onClick={() => {
+            dispatch({ type: 'REMOVE_WALLET', payload: { address: wallet.address } })
+          }}>
+            <FaTrash size={16} />
+            <Text>Remove</Text></Box>
+        </Stack></Stack>)})}
+      </Stack>
+      )
+    }
 
 export default WalletLoader

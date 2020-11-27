@@ -8,7 +8,7 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
     switch (action.type) {
         case 'ADD_WALLET': {
             let existingWallets = state.wallets?.filter((wallet: wallet)=> wallet.address === action.payload.address)
-            let wallets = state.wallets
+            let wallets = state.wallets ? state.wallets : []
             if (existingWallets && existingWallets.length === 0)
                 wallets?.push({address:action.payload.address, key:action.payload.key})
             return {
@@ -40,6 +40,32 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
             return {
                 ...state,
                 tokenAddresses: action.payload.tokenAddresses
+            }
+        }
+        case 'CHANGE_ACTIVE_WALLET': {
+            let newWallet = state.wallets.find((wallet) => wallet.address === action.payload.address)
+            return {
+                ...state,
+                address: action.payload.address,
+                key: newWallet?.key,
+                balance: action.payload.balance
+            }
+        }
+        case 'REMOVE_WALLET': {
+            let wallets = state.wallets.filter((wallet) => wallet.address !== action.payload.address)
+            if (wallets)
+            return {
+                ...state,
+                wallets: wallets,
+                address: wallets[0]?.address,
+                key: wallets[0]?.key
+            }
+            else return {
+                ...state,
+                wallets: [],
+                address: '',
+                key: '',
+                balance: ''
             }
         }
         default: return state

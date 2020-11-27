@@ -114,6 +114,9 @@ function App() {
           <Tabs isFitted align="center" variant="enclosed-colored">
             <TabPanels w="90vw">
               <TabPanel>
+                <WalletLoader />
+              </TabPanel>
+              <TabPanel>
                 {loading ? <Spinner position="fixed" bottom="50%" right="50%" /> :
                   state.address !== '' ?
                     <Box>
@@ -133,6 +136,7 @@ function App() {
             </TabPanels>
             <TabList position="fixed" bottom="0px" left="0px" w="100vw">
               <Tab>Wallet</Tab>
+              <Tab>Tokens</Tab>
               <Tab>Transactions</Tab>
             </TabList>
           </Tabs>

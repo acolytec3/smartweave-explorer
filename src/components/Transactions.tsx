@@ -128,7 +128,3 @@ const Transactions = () => {
 }
 
 export default Transactions
-
-//    <IconButton aria-label="left" icon={<FaCaretLeft />} onClick={() => getTxnsWithCursor('left')}/>
-//<IconButton aria-label="right" icon={<FaCaretRight />} onClick={() => getTxnsWithCursor('right')}/>
- 
