@@ -23,7 +23,6 @@ const AddToken: React.FC<AddTokenProps> = ({ close }) => {
     const [valid, setValid] = React.useState(true)
     const toast = useToast()
 
-    React.useEffect(()=> setAddress(''),[]  )
     const update = async () => {
         setLoading(true)
         let tokens = [...state.tokens]
