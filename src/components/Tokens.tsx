@@ -4,11 +4,10 @@ import {
     FormErrorMessage, Heading, Icon, Input, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Select, SimpleGrid,
     Spinner, Stack, Text, useToast
 } from '@chakra-ui/core'
-import { set } from 'idb-keyval'
 import React from 'react'
 import { FaCaretRight } from 'react-icons/fa'
 import WalletContext, { token } from '../context/walletContext'
-import { getFee, sendTokens, updateTokens } from '../providers/wallets'
+import { getFee, sendTokens, getToken } from '../providers/wallets'
 import PSTDrawer from './PSTDrawer'
 import TransferModal from './TransactionModal'
 
@@ -26,14 +25,33 @@ const AddToken: React.FC<AddTokenProps> = ({ close }) => {
     const update = async () => {
         setLoading(true)
         let tokens = [...state.tokens]
-        tokens.push({ contract: address, ticker: '', contractState: '' })
-        let updatedTokens = await updateTokens(tokens, state.address)
-        if (updatedTokens) {
-            await set('tokens',JSON.stringify(updatedTokens))
-            dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: updatedTokens } })
+        if (state.tokenAddresses && !state.tokenAddresses.find((tokenAddress) => tokenAddress === address))
+        {
+            try {
+            let deets = await getToken(address)
+            tokens.push(deets)
+            dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: tokens } })
+            setAddress('')
+            setLoading(false)
+            close()
+            }
+            catch (err) {
+                console.log('error adding token')
+                console.log(err)
+                toast({
+                    title: 'Error loading token',
+                    status: 'error',
+                    duration: 3000,
+                    position: 'bottom',
+                    description: 'Please check contract ID and try again'
+                })
+                setAddress('')
+                setLoading(false)
+                close()
+            }
         }
         else toast({
-            title: 'Error updating balances',
+            title: 'Token already in list',
             status: 'error',
             duration: 3000,
             position: 'bottom',

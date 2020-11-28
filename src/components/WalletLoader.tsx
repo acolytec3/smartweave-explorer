@@ -70,13 +70,13 @@ const WalletLoader = () => {
     let walletDeets = await addWallet(walletObject);
     await set('wallet', JSON.stringify(walletObject))
     setLoading(false)
-    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, tokens: [] } })
+    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject } })
   }
 
   const addAddress = async () => {
     setLoading(true)
     let walletDeets = await addWallet(address);
-    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '', tokens: [] } })
+    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '' } })
   }
 
   const switchWallet = async (address: string) => {

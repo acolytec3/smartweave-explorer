@@ -60,7 +60,7 @@ function App() {
     }
 
     getTokenDeets()
-  }, [state.tokenAddresses, state.address])
+  }, [state.tokenAddresses])
 
   React.useEffect(() => {
     const getTokenAddresses = async () => {
