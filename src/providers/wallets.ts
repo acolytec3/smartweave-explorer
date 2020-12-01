@@ -244,3 +244,37 @@ export const getAllCommunityIds = async (): Promise<string[]> => {
 
   return ids;
 }
+
+export const getTxnData = async (txId: string): Promise<string> => {
+  let arweave = getArweaveInstance()
+  let query = { query: `
+  query {
+    transactions(ids: ["${txId}"]) {
+        edges {
+            node {
+                id
+              	tags {
+                  name
+                  value
+                }
+            }
+        }
+    }
+}`}
+  let res = await arweave.api.post('/graphql', query)
+  console.log(res)
+  let contractSrcTxn = res.data.data.transactions.edges[0].node.tags.filter((tag:any) => tag.name === 'Contract-Src')[0].value
+  console.log(contractSrcTxn)
+  let contractSource = await arweave.transactions.getData(contractSrcTxn, {decode: true, string: true}) as string
+  return contractSource;
+}
+
+export const testFunction = async (method: string, contractId: string, params: any, key: JWKInterface) : Promise<string> => {
+  let arweave = getArweaveInstance()
+  let res = await interactWriteDryRun(arweave, key, contractId, {
+    ...params,
+    function: method
+  })
+  console.log(res)
+  return res.type
+}

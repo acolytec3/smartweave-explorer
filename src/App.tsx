@@ -1,11 +1,8 @@
 import {
-  Box, Button, ChakraProvider, Heading, Modal, ModalBody,
-  ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
-  Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, theme, useDisclosure
-} from '@chakra-ui/core';
-import { del, get } from 'idb-keyval';
+  Box, ChakraProvider, Heading, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, theme} from '@chakra-ui/core';
+import { get } from 'idb-keyval';
 import React from 'react';
-import { FaCameraRetro, FaUpload, FaWallet } from 'react-icons/fa';
+import { FaCameraRetro, FaUpload } from 'react-icons/fa';
 import CameraWindow from './components/Camera';
 import { SpeedDial, SpeedDialItem } from './components/SpeedDial';
 import Tokens from './components/Tokens';
@@ -15,7 +12,7 @@ import WalletLoader from './components/WalletLoader';
 import WalletContext, { initWalletState, token } from './context/walletContext';
 import { addWallet, getBlockHeight, getAllCommunityIds, getToken } from './providers/wallets';
 import walletReducer from './reducers/walletReducer';
-
+import SmartweaveExplorer from './components/Smartweave'
 
 function App() {
   const [state, dispatch] = React.useReducer(walletReducer, initWalletState)
@@ -112,11 +109,15 @@ function App() {
                   <Transactions />
                 }
               </TabPanel>
+              <TabPanel>
+                <SmartweaveExplorer />
+              </TabPanel>
             </TabPanels>
             <TabList position="fixed" bottom="0px" left="0px" w="100vw">
               <Tab>Wallet</Tab>
               <Tab isDisabled={state.address === ''}>Tokens</Tab>
               <Tab isDisabled={state.address === ''}>Transactions</Tab>
+              <Tab>Smartweave</Tab>
             </TabList>
           </Tabs>
         </Stack>
