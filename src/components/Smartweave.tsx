@@ -58,7 +58,8 @@ const SmartweaveExplorer = () => {
                             names.push(node.test)
                         break;
                     case "BinaryExpression":
-                        if (node.test.argument).argum
+                        if (node.test.argument)
+                            names.push(node.test)
                 }
             }
         });
