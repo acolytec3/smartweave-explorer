@@ -105,7 +105,7 @@ const SmartweaveExplorer = () => {
                                             testFunction(name, contractId, values, state.key, types)
                                                 .then(res => setStatus(res))
                                         }}
-                                        >Call Contract Method</Button>
+                                        >Test Contract Method Call</Button>
                                     </PopoverTrigger>
                                     <PopoverContent>
                                     <PopoverArrow />
