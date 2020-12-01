@@ -31,8 +31,8 @@ A mobile wallet for the permaweb
 - [x] Support data transactions in various forms (file upload, take picture with device camera and post to Arweave, etc)
 - [x] Support custom tags on any/all transactions
 - [x] Allow transaction history filtering/searching
-- [ ] Interact with all exposed Smartweave functions
-- [ ] Read and view Smartweave contract state
+- [x] Interact with all exposed Smartweave functions
+- [x] Read and view Smartweave contract state
 - [x] Expanded PST interactions
     - [x] View vaulted balances
     - [x] Integrate Verto buy/sell functionality
