@@ -92,7 +92,7 @@ const Transactions = () => {
   return (<Box h="100%">
     <RadioGroup onChange={(evt) => setFilter(evt.toString())} value={filter} defaultValue="from">
       <Stack direction="row" spacing={4}>
-        <Radio value="from">From Wallet</Radio>
+        <Radio defaultChecked value="from">From Wallet</Radio>
         <Radio value="to">To Wallet</Radio>
       </Stack>
     </RadioGroup>

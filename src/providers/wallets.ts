@@ -247,3 +247,73 @@ export const getAllCommunityIds = async (): Promise<string[]> => {
 
   return ids;
 }
+
+export const getTxnData = async (txId: string): Promise<string> => {
+  let arweave = getArweaveInstance()
+  let query = { query: `
+  query {
+    transactions(ids: ["${txId}"]) {
+        edges {
+            node {
+                id
+              	tags {
+                  name
+                  value
+                }
+            }
+        }
+    }
+}`}
+  let res = await arweave.api.post('/graphql', query)
+  console.log(res)
+  let contractSrcTxn = res.data.data.transactions.edges[0].node.tags.filter((tag:any) => tag.name === 'Contract-Src')[0].value
+  console.log(contractSrcTxn)
+  let contractSource = await arweave.transactions.getData(contractSrcTxn, {decode: true, string: true}) as string
+  return contractSource;
+}
+
+export const testFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any) : Promise<string> => {
+  let arweave = getArweaveInstance()
+  console.log('params are')
+  console.log(params)
+  console.log('types are')
+  console.log(types)
+  let newParams = {...params}
+  for (let param in newParams) {
+    if (types[param] === "integer") {
+      newParams[param] = parseInt(params[param])
+    }
+    else if (types[param] === "float") {
+      newParams[param] = parseFloat(params[param])
+    }
+  }
+  let res = await interactWriteDryRun(arweave, key, contractId, {
+    ...newParams,
+    function: method
+  })
+  console.log(res)
+  return res.type
+}
+
+export const runFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any) : Promise<string | false> => {
+  let arweave = getArweaveInstance()
+  console.log('params are')
+  console.log(params)
+  console.log('types are')
+  console.log(types)
+  let newParams = {...params}
+  for (let param in newParams) {
+    if (types[param] === "integer") {
+      newParams[param] = parseInt(params[param])
+    }
+    else if (types[param] === "float") {
+      newParams[param] = parseFloat(params[param])
+    }
+  }
+  let res = await interactWrite(arweave, key, contractId, {
+    ...newParams,
+    function: method
+  })
+  console.log(res)
+  return res
+}
