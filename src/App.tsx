@@ -117,7 +117,7 @@ function App() {
               <Tab>Wallet</Tab>
               <Tab isDisabled={state.address === ''}>Tokens</Tab>
               <Tab isDisabled={state.address === ''}>Transactions</Tab>
-              <Tab>Smartweave</Tab>
+              <Tab isDisabled={state.key === ''}>Smartweave</Tab>
             </TabList>
           </Tabs>
         </Stack>
