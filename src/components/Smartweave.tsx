@@ -1,6 +1,6 @@
 import React from 'react'
-import { Button, Input, Code, List, ListItem, Textarea, VStack, Accordion, AccordionButton, useToast, AccordionItem, AccordionPanel, Text, Box, RadioGroup, Radio, PopoverTrigger, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, Spinner, PopoverContent } from '@chakra-ui/core';
-import { getTxnData, runFunction, testFunction } from '../providers/wallets'
+import { Button, Input, Code, List, ListItem, Textarea, VStack, Accordion, AccordionButton, useToast, AccordionItem, AccordionPanel, Text, Box, RadioGroup, Radio, PopoverTrigger, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, Spinner, PopoverContent, Heading } from '@chakra-ui/core';
+import { getContractState, getTxnData, runFunction, testFunction } from '../providers/wallets'
 import WalletContext from '../context/walletContext'
 const acorn = require("acorn")
 
@@ -13,6 +13,7 @@ const SmartweaveExplorer = () => {
     const [contractId, setID] = React.useState('')
     const [methods, setMethods] = React.useState([] as any[])
     const [txnStatus, setStatus] = React.useState('')
+    const [contractState, setState] = React.useState({} as any)
     const { state } = React.useContext(WalletContext)
 
 
@@ -44,6 +45,8 @@ const SmartweaveExplorer = () => {
                 })
                 setMethods(methodNames.filter((method) => method.name))
             }
+            res = await getContractState(contractId)
+            setState(res)
         }
 
     }
@@ -126,9 +129,15 @@ const SmartweaveExplorer = () => {
     return (<VStack>
         <Input placeholder="Smartweave Contract ID" value={contractId} onChange={(evt) => setID(evt.target.value)} />
         <Button onClick={getSource}>Load Contract</Button>
+        <Heading size="xs">Contract Source</Heading>
         <Code w="100%">
             <Textarea overflow="scroll" height="200px" readOnly={true} fontSize='xs' isReadOnly defaultValue={contractSource} />
         </Code>
+        <Heading size="xs">Contract State</Heading>
+        <Code w="100%">
+            <Textarea overflow="scroll" height="200px" readOnly={true} fontSize='xs' isReadOnly defaultValue={JSON.stringify(contractState, null, 2)} />
+        </Code>
+        <Heading size="xs">Available Methods</Heading>
         <List>
             {methods && methods.map((method: FunctionCallProps) => <ListItem>
                 <FunctionCall name={method.name} params={method.params} />

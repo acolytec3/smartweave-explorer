@@ -1,6 +1,6 @@
 import Arweave from 'arweave'
 import axios from 'axios'
-import { interactWriteDryRun, interactWrite } from 'smartweave'
+import { interactWriteDryRun, interactWrite, readContract } from 'smartweave'
 import { getContract } from 'cacheweave'
 //@ts-ignore
 import { generateKeyPair } from 'human-crypto-keys'
@@ -270,6 +270,11 @@ export const getTxnData = async (txId: string): Promise<string> => {
   console.log(contractSrcTxn)
   let contractSource = await arweave.transactions.getData(contractSrcTxn, {decode: true, string: true}) as string
   return contractSource;
+}
+
+export const getContractState = async (contractId: string) : Promise<any> => {
+  let arweave = getArweaveInstance()
+  return await readContract(arweave, contractId)
 }
 
 export const testFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any) : Promise<string> => {
