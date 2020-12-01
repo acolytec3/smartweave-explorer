@@ -269,12 +269,48 @@ export const getTxnData = async (txId: string): Promise<string> => {
   return contractSource;
 }
 
-export const testFunction = async (method: string, contractId: string, params: any, key: JWKInterface) : Promise<string> => {
+export const testFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any) : Promise<string> => {
   let arweave = getArweaveInstance()
+  console.log('params are')
+  console.log(params)
+  console.log('types are')
+  console.log(types)
+  let newParams = {...params}
+  for (let param in newParams) {
+    if (types[param] === "integer") {
+      newParams[param] = parseInt(params[param])
+    }
+    else if (types[param] === "float") {
+      newParams[param] = parseFloat(params[param])
+    }
+  }
   let res = await interactWriteDryRun(arweave, key, contractId, {
-    ...params,
+    ...newParams,
     function: method
   })
   console.log(res)
   return res.type
+}
+
+export const runFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any) : Promise<string | false> => {
+  let arweave = getArweaveInstance()
+  console.log('params are')
+  console.log(params)
+  console.log('types are')
+  console.log(types)
+  let newParams = {...params}
+  for (let param in newParams) {
+    if (types[param] === "integer") {
+      newParams[param] = parseInt(params[param])
+    }
+    else if (types[param] === "float") {
+      newParams[param] = parseFloat(params[param])
+    }
+  }
+  let res = await interactWrite(arweave, key, contractId, {
+    ...newParams,
+    function: method
+  })
+  console.log(res)
+  return res
 }
