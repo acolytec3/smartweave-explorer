@@ -70,6 +70,9 @@ export const getTxns = async ({ address = undefined, name = undefined, value = u
                         winston
                         ar
                       }
+                      owner {
+                        address
+                      }
                     }
                   }
                 }
