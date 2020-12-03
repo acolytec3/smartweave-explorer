@@ -9,16 +9,17 @@ A mobile wallet for the permaweb
 - Prosper
 
 ## Features
-- Load wallets from either JSON or BIP39 mnemonics
+- Load wallets from either JSON key files or BIP39 mnemonics
 - Send AR and PSTs directly from the app without any fees other than network fees
-- Load custom PSTs if not already displayed
+- Load custom PSTs (supported by Smartweave 0.3.0 and above) if not already displayed
 - Trade PSTs you own through the Verto network
 - See vaulted balances for PSTs associated with any profit sharing community
 - View historical transactions from any loaded wallet/address and associated metadata
 - Search transactions based on tag name/value
 - Manage multiple wallets within the app
-- Upload pictures direcctly from device camera
+- Upload pictures directly from device camera
 - Upload files from device
+- Interact with any Smartweave contract using only the app 
 
 ## Additional thoughts
  - Your wallet **never ever** leaves your device.  That said, I make no guarantees about the security of your keys. It's the same as leaving your wallet key file lying around on your hard drive.
