@@ -139,7 +139,7 @@ const FunctionCall: React.FC<FunctionCallProps> = ({ name, params, methodType, c
 
     return (
         <Accordion allowToggle>
-            <AccordionItem>
+            <AccordionItem key={name}>
                 <AccordionButton>
                     <Text>{name}</Text>
                     <AccordionIcon />

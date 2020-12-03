@@ -1,13 +1,14 @@
 import {
     Box, Button,
+    Center,
     Divider, FormControl,
     FormErrorMessage, Heading, Icon, Input, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Select, SimpleGrid,
-    Spinner, Stack, Text, useToast
+    Spinner, Stack, Text, useToast, VStack
 } from '@chakra-ui/core'
 import React from 'react'
 import { FaCaretRight } from 'react-icons/fa'
 import WalletContext, { token } from '../context/walletContext'
-import { getFee, sendTokens, getToken } from '../providers/wallets'
+import { getFee, sendTokens, getToken, getAllCommunityIds } from '../providers/wallets'
 import PSTDrawer from './PSTDrawer'
 import TransferModal from './TransactionModal'
 
@@ -85,13 +86,14 @@ const AddToken: React.FC<AddTokenProps> = ({ close }) => {
     )
 }
 const Tokens = () => {
-    const { state } = React.useContext(WalletContext)
+    const { state, dispatch } = React.useContext(WalletContext)
     const [modal, openModal] = React.useState(false)
     const [to, setTo] = React.useState('')
     const [amount, setAmount] = React.useState(0)
     const closeModal = () => openModal(false)
     const [fee, setFee] = React.useState('')
     const [loading, setLoading] = React.useState(false)
+    const [tokensLoading, setTokensLoading] = React.useState(false)
     const toast = useToast();
     const [open, setOpen] = React.useState(false)
     const [currentPST, setPST] = React.useState({})
@@ -117,6 +119,49 @@ const Tokens = () => {
             default: setList(state.tokens)
         }
     },[state.tokens, sortOption])
+
+    React.useEffect(() => {
+        async function* getTokens() {
+          if (state.tokenAddresses) {
+            for (let j = 0; j < state.tokenAddresses?.length; j++) {
+              if (!state.tokens.find((token) => token.contract === state.tokenAddresses![j])) {
+                try {
+                  let token = await getToken(state.tokenAddresses[j])
+                  yield token
+                }
+                catch (err) {
+                  console.log('error loading token')
+                  console.log(err)
+                }
+              }
+            }
+          }
+        }
+    
+        const getTokenDeets = async () => {
+          let tokens: token[] = []
+          setTokensLoading(true)
+          for await (let token of getTokens()) {
+            console.log(token)
+            tokens.push(token)
+          }
+          setTokensLoading(false)
+          dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: tokens } })
+        }
+    
+        getTokenDeets()
+      }, [state.tokenAddresses])
+    
+      React.useEffect(() => {
+        const getTokenAddresses = async () => {
+          let tokens = await getAllCommunityIds();
+          dispatch({ type: 'SET_TOKEN_ADDRESSES', payload: { tokenAddresses: tokens } })
+          console.log(state.tokenAddresses)
+        }
+
+        console.log(`start showing the skeletor ${tokensLoading}`)
+        getTokenAddresses()
+      }, [])
 
     const initTokenTransfer = async (token: token, onClose: any) => {
         setLoading(true)
@@ -150,7 +195,12 @@ const Tokens = () => {
             <Text fontWeight="bold" minWidth="150px">Ticker</Text>
             <Text fontWeight="bold">Balance</Text>
         </SimpleGrid>
-        <Divider />
+        {tokensLoading && <Center h="200px">
+            <Box align="center">
+            <Spinner pb="10px" />
+            <Text>Loading tokens...</Text>
+            </Box>
+        </Center>}
         {tokenList.map((token: token) => {
             if (token && token.ticker) {
                 return (

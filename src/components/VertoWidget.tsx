@@ -1,5 +1,5 @@
 import {
-    Box, Button, Divider, Heading, HStack, Input,
+    Box, Button, Center, Divider, Heading, HStack, Input,
     Popover, PopoverArrow, PopoverBody,
     PopoverCloseButton, PopoverContent,
     PopoverHeader, PopoverTrigger, Spinner, Text, VStack
@@ -116,7 +116,8 @@ const VertoWidget: React.FC<VertoProps> = ({ contractID, ticker, balance }) => {
 
     return (
         <VStack align="center">
-            {loading && <Spinner />}
+            <Heading size="sm">Verto Exchange</Heading>
+            {loading && <Center h="100px"><Spinner /></Center>}
             {!loading && <Box>
                 <Heading size="sm">Buy {ticker}</Heading>
                 <Divider />

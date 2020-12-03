@@ -1,8 +1,8 @@
 
 import {
-    Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Avatar, Box, Button, Drawer,
-    DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack,
-    Stack, Text
+ Avatar, Box, Button, Collapse, Drawer,
+    DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Heading, HStack,
+    Stack, Text, useDisclosure
 } from "@chakra-ui/core";
 import React from 'react';
 import WalletContext from '../context/walletContext';
@@ -23,7 +23,7 @@ interface VaultProps {
 
 const PSTBalances = (balances: any) => {
     const [total, setTotal] = React.useState(0)
-
+    const [open, setOpen] = React.useState(false)
     React.useEffect(() => {
         let mounted = true
         let totalBalance = 0
@@ -35,28 +35,24 @@ const PSTBalances = (balances: any) => {
     }, [balances])
 
     return (
-        <Accordion allowToggle w="100%">
-            <AccordionItem>
-                <AccordionButton bg="white" border="1px" borderColor="grey">
-                    <Text>All balances - {total} in circulation</Text>
-                    <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel border="1px">
-                    {Object.entries(balances.balances).map((balance: any[]) => {
-                        return (<HStack w="100%" key={balance[0] + 1}>
-                            <Text key={balance[0]} maxWidth="200px" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">{balance[0]}:</Text>
-                            <Text key={balance[0] + balance[0]}>{balance[1].toString()}</Text>
-                        </HStack>)
-                    })
-                    }
-                </AccordionPanel>
-            </AccordionItem>
-        </Accordion>
+        <Box w='100%'>
+            <Box bg="white" border="1px" borderColor="grey" onClick={() => setOpen(!open)}><Text>All balances - {total} in circulation</Text></Box>
+            <Collapse in={open}>
+                {Object.entries(balances.balances).map((balance: any[]) => {
+                    return (<HStack w="100%" key={balance[0] + 1}>
+                        <Text key={balance[0]} maxWidth="200px" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">{balance[0]}:</Text>
+                        <Text key={balance[0] + balance[0]}>{balance[1].toString()}</Text>
+                    </HStack>)
+                })
+                }
+            </Collapse>
+        </Box>
     )
 }
 
 const PSTVault: React.FC<VaultProps> = ({ vault }) => {
     const [total, setTotal] = React.useState(0)
+    const { isOpen, onToggle } = useDisclosure()
 
     React.useEffect(() => {
         let mounted = true
@@ -69,27 +65,22 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
     }, [vault])
 
     return (
-        <Accordion allowToggle w="100%">
-            <AccordionItem>
-                <AccordionButton bg="white" border="1px" borderColor="grey">
-                    <Text>Vaulted balances: {total}</Text>
-                    <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel border="1px">
-                    {Object.keys(vault).map((key) => {
-                        if (vault[key].length > 0)
-                            return vault[key].map((balance: any, index: number) => {
-                                return (<Box key={key + index} fontSize={12}>
-                                    <Text key={key} maxWidth="100%" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">Address: {key}</Text>
-                                    <HStack><Text key={balance.toString()}>Balance: {balance.balance}</Text>
+        <Box w='100%'>
+            <Box bg="white" border="1px" borderColor="grey" onClick={onToggle}><Text>Vaulted balances: {total}</Text></Box>
+            <Collapse in={isOpen}>
+                {Object.keys(vault).map((key) => {
+                    if (vault[key].length > 0)
+                        return vault[key].map((balance: any, index: number) => {
+                            return (<Box key={key + index} fontSize={12}>
+                                <Text key={key} maxWidth="100%" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">Address: {key}</Text>
+                                <HStack><Text key={balance.toString()}>Balance: {balance.balance}</Text>
                                     <Text key={balance.start + balance.end + key}>End Block: {balance.end}</Text></HStack>
-                                </Box>)
-                            })
-                    })
-                    }
-                </AccordionPanel>
-            </AccordionItem>
-        </Accordion>
+                            </Box>)
+                        })
+                })
+                }
+            </Collapse>
+        </Box>
     )
 }
 const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) => {
@@ -146,7 +137,7 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
                 </DrawerHeader>
                 <DrawerBody>
                     <Stack>
-                        <Text>Balance: {contractState.balances[state.address]}</Text>
+                        <Text>Balance: {contractState.balances[state.address] ? contractState.balances[state.address] : 0}</Text>
                         {
                             vaultTime.map((vault: { balance: string, message: string }, index: number) => {
                                 return (<HStack>
