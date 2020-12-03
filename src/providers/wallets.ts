@@ -1,6 +1,6 @@
 import Arweave from 'arweave'
 import axios from 'axios'
-import { interactWriteDryRun, interactWrite, readContract } from 'smartweave'
+import { interactWriteDryRun, interactWrite, interactRead, } from 'smartweave'
 import { getContract } from 'cacheweave'
 //@ts-ignore
 import { generateKeyPair } from 'human-crypto-keys'
@@ -274,7 +274,7 @@ export const getTxnData = async (txId: string): Promise<string> => {
 
 export const getContractState = async (contractId: string) : Promise<any> => {
   let arweave = getArweaveInstance()
-  return await readContract(arweave, contractId)
+  return await getContract(arweave, contractId)
 }
 
 export const testFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any) : Promise<string> => {
@@ -300,7 +300,7 @@ export const testFunction = async (method: string, contractId: string, params: a
   return res.type
 }
 
-export const runFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any) : Promise<string | false> => {
+export const runFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any, methodType: string) : Promise<any> => {
   let arweave = getArweaveInstance()
   console.log('params are')
   console.log(params)
@@ -315,10 +315,17 @@ export const runFunction = async (method: string, contractId: string, params: an
       newParams[param] = parseFloat(params[param])
     }
   }
-  let res = await interactWrite(arweave, key, contractId, {
+  let res: string | false
+  if (methodType === 'write') {
+     res = await interactWrite(arweave, key, contractId, {
     ...newParams,
     function: method
-  })
+  })}
+  else res = (await interactRead(arweave, key, contractId, {
+    ...newParams,
+    function: method
+  }))
   console.log(res)
   return res
 }
+
