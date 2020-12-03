@@ -44,7 +44,7 @@ const Transactions = () => {
   const [txns, setTxns] = React.useState([])
   const [name, setName] = React.useState('')
   const [value, setValue] = React.useState('')
-  const [filter, setFilter] = React.useState('')
+  const [filter, setFilter] = React.useState('from')
 
   React.useEffect(() => {
     async function getTransactions () {

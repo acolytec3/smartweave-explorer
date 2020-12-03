@@ -25,6 +25,7 @@ function App() {
     if (modal === 'camera') setCamera(false)
   }
 
+  // Retrieves block height for use in calculating approximate vaulted balance times for PSTs
   React.useEffect(() => {
     getBlockHeight().then((res) => dispatch({ type: 'SET_BLOCK_HEIGHT', payload: { blockHeight: res } }))
   }, [])
