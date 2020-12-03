@@ -17,7 +17,7 @@ const SmartweaveExplorer = () => {
     const [contractId, setID] = React.useState('')
     const [writeMethods, setWriteMethods] = React.useState([] as FunctionCallProps[])
     const [readMethods, setReadMethods] = React.useState([] as FunctionCallProps[])
-    const [contractState, setState] = React.useState({} as any)
+    const [contractState, setContractState] = React.useState({} as any)
 
 
     const getSource = async () => {
@@ -35,7 +35,7 @@ const SmartweaveExplorer = () => {
             }
             res = await getContractState(contractId)
             console.log(res)
-            setState(JSON.stringify(res,null,2))
+            setContractState(res)
         }
 
     }
@@ -45,7 +45,6 @@ const SmartweaveExplorer = () => {
         let writeMethods: FunctionCallProps[] = []
         src.forEach((node) => {
             if (node.test.type === "BinaryExpression" && node.test.left.object && node.test.left.object.name === "input") {
-                console.log(node)
                 try {
                     let returnStatement = node.consequent.body[node.consequent.body.length - 1]     //Get write methods
                     if (returnStatement.type === 'ReturnStatement' && returnStatement.argument.properties[0].key.name === 'state') {
@@ -61,7 +60,7 @@ const SmartweaveExplorer = () => {
                     }
                     else {
                         console.log('found read method')
-                        console.log(node.consequent.body[0])            //Get read methods
+                      //Get read methods
                         let params = node.consequent.body.filter((param: any) => param.type === "VariableDeclaration" && (
                             (param.declarations[0].init.left && param.declarations[0].init.left.object && param.declarations[0].init.left.object.name === "input") ||
                             (param.declarations[0].init.object && param.declarations[0].init.object.name === "input")))
@@ -91,7 +90,7 @@ const SmartweaveExplorer = () => {
         </Code>
         <Heading size="xs">Contract State</Heading>
         <Code w="100%">
-            <Textarea overflow="scroll" height="200px" readOnly={true} fontSize='xs' isReadOnly defaultValue={contractState} />
+            <Textarea overflow="scroll" height="200px" readOnly={true} fontSize='xs' isReadOnly defaultValue={JSON.stringify(contractState, null, 2)} />
         </Code>
         <Heading size="xs">Write Methods</Heading>
         <List>
