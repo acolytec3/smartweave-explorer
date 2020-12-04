@@ -1,7 +1,7 @@
 
 import {
- Avatar, Box, Button, Collapse, Drawer,
-    DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Heading, HStack,
+    Avatar, Box, Button, Collapse, Drawer,
+    DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack,
     Stack, Text, useDisclosure
 } from "@chakra-ui/core";
 import React from 'react';
@@ -77,6 +77,7 @@ const PSTVault: React.FC<VaultProps> = ({ vault }) => {
                                     <Text key={balance.start + balance.end + key}>End Block: {balance.end}</Text></HStack>
                             </Box>)
                         })
+                    return null
                 })
                 }
             </Collapse>

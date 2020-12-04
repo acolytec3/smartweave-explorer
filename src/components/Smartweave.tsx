@@ -1,8 +1,7 @@
-import React from 'react'
-import { Button, Input, Code, List, ListItem, Textarea, VStack, Accordion, AccordionButton, useToast, AccordionItem, AccordionPanel, Text, Box, RadioGroup, Radio, PopoverTrigger, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, Spinner, PopoverContent, Heading, Collapse, useDisclosure, AccordionIcon, HStack } from '@chakra-ui/core';
-import { getContractState, getTxnData, runFunction, testFunction } from '../providers/wallets'
-import WalletContext from '../context/walletContext'
-import { write } from 'fs';
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Button, Code, Collapse, Heading, HStack, Input, List, ListItem, Radio, RadioGroup, Spinner, Text, Textarea, useDisclosure, useToast, VStack } from '@chakra-ui/core';
+import React from 'react';
+import WalletContext from '../context/walletContext';
+import { getContractState, getTxnData, runFunction, testFunction } from '../providers/wallets';
 const acorn = require("acorn")
 const walk = require("acorn-walk")
 interface FunctionCallProps {

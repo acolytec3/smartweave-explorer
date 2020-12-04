@@ -1,4 +1,4 @@
-import { walletState, wallet, token } from '../context/walletContext';
+import { walletState, wallet } from '../context/walletContext';
 
 const walletReducer = (state: walletState, action: { type: string, payload: any }): walletState => {
     console.log('Current state is:')
@@ -17,13 +17,13 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
             balance: action.payload.balance,
             address: action.payload.address,
             wallets: wallets
-        }};
+        }}
         case 'UPDATE_TOKENS': {
             return {
                 ...state,
                 tokens: action.payload.tokens
             }
-        };
+        }
         case 'SET_PICTURE': {
             return {
                 ...state,
