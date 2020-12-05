@@ -88,8 +88,8 @@ const SmartweaveExplorer = () => {
             <Textarea overflow="scroll" height="200px" readOnly={true} fontSize='xs' isReadOnly defaultValue={contractSource} />
         </Code>
         <Heading size="xs">Contract State</Heading>
-        <Code w="100%">
-            <Textarea overflow="scroll" height="200px" readOnly={true} fontSize='xs' isReadOnly defaultValue={JSON.stringify(contractState, null, 2)} />
+        <Code w="100%" overflow="scroll" height="200px" fontSize='xs' align="start">
+          {JSON.stringify(contractState, null, 2)}
         </Code>
         <Heading size="xs">Write Methods</Heading>
         <List>
