@@ -45,7 +45,7 @@ const WalletLoader = () => {
           await set("wallet", JSON.stringify(walletObject));
           dispatch({
             type: "ADD_WALLET",
-            payload: { ...walletDeets, key: walletObject },
+            payload: { ...walletDeets, key: walletObject, mnemonic: walletObject.mnemonic },
           });
         } catch (err) {
           console.log("Invalid json in wallet file");
@@ -109,7 +109,7 @@ const WalletLoader = () => {
   };
 
   const createWalletFile = async (wallet: wallet) => {
-    const blob = new Blob([JSON.stringify(wallet.key, null, 2)], {
+    const blob = new Blob([JSON.stringify({...wallet.key, mnemonic: wallet.mnemonic}, null, 2)], {
       type: "application/json",
     });
     const href = await URL.createObjectURL(blob);
