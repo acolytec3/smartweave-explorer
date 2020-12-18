@@ -47,6 +47,7 @@ const WalletLoader = () => {
             type: "ADD_WALLET",
             payload: { ...walletDeets, key: walletObject, mnemonic: walletObject.mnemonic },
           });
+          set('wallets', JSON.stringify(state))
         } catch (err) {
           console.log("Invalid json in wallet file");
           toast({
@@ -93,6 +94,7 @@ const WalletLoader = () => {
       type: "ADD_WALLET",
       payload: { ...walletDeets, key: walletObject, mnemonic: mnemonic },
     });
+    set('wallets', JSON.stringify(state))
   };
 
   const generateWallet = async () => {
@@ -106,6 +108,7 @@ const WalletLoader = () => {
     setLoading(true);
     let walletDeets = await addWallet(address);
     dispatch({ type: "ADD_WALLET", payload: { ...walletDeets, key: "" } });
+    set('wallets', JSON.stringify(state))
   };
 
   const createWalletFile = async (wallet: wallet) => {

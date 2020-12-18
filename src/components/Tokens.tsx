@@ -5,6 +5,7 @@ import {
     FormErrorMessage, Heading, Icon, Input, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Select, SimpleGrid,
     Spinner, Stack, Text, useToast, VStack
 } from '@chakra-ui/core'
+import { set } from 'idb-keyval'
 import React from 'react'
 import { FaCaretRight } from 'react-icons/fa'
 import WalletContext, { token } from '../context/walletContext'
@@ -147,6 +148,7 @@ const Tokens = () => {
           }
           setTokensLoading(false)
           dispatch({ type: 'UPDATE_TOKENS', payload: { tokens: tokens } })
+          set('wallets',JSON.stringify(state))
         }
     
         getTokenDeets()

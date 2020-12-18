@@ -38,14 +38,12 @@ function App() {
       dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: wallet } })
       setLoading(false)
     }
-    get('wallet').then((data: any) => {
+    get('wallets').then((data: any) => {
       if (data) {
-        try {
-          loadWallet(data)
-        }
-        catch (err) { console.log('Error loading wallet', err) }
+        let loadedState = JSON.parse(data)
+        dispatch({ type: 'LOAD_STATE', payload: { state: loadedState}})
       }
-      else setLoading(false)
+      setLoading(false)
     })
   }, [])
 

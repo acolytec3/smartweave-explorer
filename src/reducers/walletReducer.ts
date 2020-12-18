@@ -6,6 +6,9 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
     console.log('Action requested is:')
     console.log(action)
     switch (action.type) {
+        case 'LOAD_STATE': {
+            return { ...action.payload.state }
+        }
         case 'ADD_WALLET': {
             let existingWallets = state.wallets?.filter((wallet: wallet)=> wallet.address === action.payload.address)
             let wallets = state.wallets ? state.wallets : []
