@@ -8,10 +8,12 @@ export type token = {
 
 export type wallet = {
     address: string,
-    key?: any
+    key?: any,
+    mnemonic?: string
 }
 export type walletState = {
     key : any,
+    mnemonic?: string
     balance: string,
     address: string,
     tokens: token[],

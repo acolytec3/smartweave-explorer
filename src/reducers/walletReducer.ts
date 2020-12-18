@@ -10,12 +10,13 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
             let existingWallets = state.wallets?.filter((wallet: wallet)=> wallet.address === action.payload.address)
             let wallets = state.wallets ? state.wallets : []
             if (existingWallets && existingWallets.length === 0)
-                wallets?.push({address:action.payload.address, key:action.payload.key})
+                wallets?.push({address:action.payload.address, key:action.payload.key, mnemonic: action.payload.mnemonic})
             return {
             ...state,
             key: action.payload.key,
             balance: action.payload.balance,
             address: action.payload.address,
+            mnemonic: action.payload.mnemonic,
             wallets: wallets
         }}
         case 'UPDATE_TOKENS': {
@@ -48,7 +49,8 @@ const walletReducer = (state: walletState, action: { type: string, payload: any 
                 ...state,
                 address: action.payload.address,
                 key: newWallet?.key,
-                balance: action.payload.balance
+                balance: action.payload.balance,
+                mnemonic: newWallet?.mnemonic
             }
         }
         case 'REMOVE_WALLET': {

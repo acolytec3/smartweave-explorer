@@ -1,11 +1,11 @@
 import React from 'react';
 import Dropzone from 'react-dropzone'
-import { Box, Button, Divider, Heading, Input, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
+import { Box, Button, Divider, Flex, Heading, Input, Skeleton, Spinner, Stack, Text, useToast } from '@chakra-ui/core'
 import { set } from 'idb-keyval'
 import { addWallet } from '../providers/wallets'
-import WalletContext from '../context/walletContext'
-import { getKeyFromMnemonic } from 'arweave-mnemonic-keys'
-import { FaCheck, FaTrash } from 'react-icons/fa';
+import WalletContext, { wallet } from '../context/walletContext'
+import { getKeyFromMnemonic, generateMnemonic } from 'arweave-mnemonic-keys'
+import { FaCheck, FaKey, FaTrash } from 'react-icons/fa';
 
 const WalletLoader = () => {
   const toast = useToast()
@@ -70,7 +70,14 @@ const WalletLoader = () => {
     let walletDeets = await addWallet(walletObject);
     await set('wallet', JSON.stringify(walletObject))
     setLoading(false)
-    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject } })
+    dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: walletObject, mnemonic: mnemonic } })
+  }
+
+  const generateWallet = async () => {
+    setLoading(true)
+    let mnemonic = await generateMnemonic()
+    setAddress(mnemonic)
+    loadWalletFromMnemonic(mnemonic)
   }
 
   const addAddress = async () => {
@@ -79,12 +86,27 @@ const WalletLoader = () => {
     dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: '' } })
   }
 
+  const createWalletFile = async (wallet: wallet) => {
+    const blob = new Blob([JSON.stringify(wallet.key, null, 2)], { type: 'application/json' });
+    const href = await URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = `arweave-keyfile-${wallet.address}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   const switchWallet = async (address: string) => {
     let wallet = await addWallet(address)
     dispatch({ type: 'CHANGE_ACTIVE_WALLET', payload: { address: wallet.address, balance: wallet.balance } })
+    let mnemonic = state.wallets.find((wallet) => wallet.address === address)?.mnemonic
+    if (mnemonic) setAddress(mnemonic) 
+    else setAddress('')
   }
+
   return (<Stack align="center">
-    {loading ? <Spinner /> :
+    <Skeleton isLoaded={!loading}>
       <Box w="100%" borderStyle='dashed' borderWidth="2px">
         <Dropzone onDrop={onDrop}>
           {({ getRootProps, getInputProps }) => (
@@ -97,15 +119,18 @@ const WalletLoader = () => {
           )}
         </Dropzone>
       </Box>
-    }
-    {!loading && <Stack w="100%">
-      <Input w="93%%" placeholder="Wallet mnemonic" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
-      <Button isDisabled={(address === '')} onClick={() => loadWalletFromMnemonic(address)}>Load Wallet</Button>
-    </Stack>}
-    {!loading && <Stack w="100%">
+    
+   <Stack w="100%">
+      <Input w="93%%" placeholder="Wallet mnemonic" value={address} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
+      <Flex direction="row">
+        <Button isDisabled={(address === '')} onClick={() => loadWalletFromMnemonic(address)}>Load Wallet</Button>
+        <Button ml={2} onClick={generateWallet}>Generate New Wallet</Button>
+      </Flex>
+    </Stack>
+    <Stack w="100%">
       <Input w="93%%" placeholder="Read-only wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
       <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
-    </Stack>}
+    </Stack></Skeleton>
     {state.address && <>
       <Divider />
       <Heading size="sm">Loaded Wallets</Heading>
@@ -116,7 +141,8 @@ const WalletLoader = () => {
         <Text whiteSpace="nowrap" overflow="hidden" maxWidth="200px" textOverflow="ellipsis">Address: {wallet.address}</Text>
         <Stack isInline justifyContent="space-around">
           <Box key={wallet.address + 'pseudo2'} as="button" onClick={() => {
-            switchWallet(wallet.address) }}
+            switchWallet(wallet.address)
+          }}
             alignContent="start">
             <FaCheck size={16} />
             <Text>Use</Text></Box>
@@ -125,9 +151,13 @@ const WalletLoader = () => {
           }}>
             <FaTrash size={16} />
             <Text>Remove</Text></Box>
-        </Stack></Stack>)})}
-      </Stack>
-      )
-    }
+            <Box as="button" onClick={() => createWalletFile(wallet)}>
+            <FaKey size={16} />
+            <Text>Download Keyfile</Text></Box>
+        </Stack></Stack>)
+    })}
+  </Stack>
+  )
+}
 
 export default WalletLoader
