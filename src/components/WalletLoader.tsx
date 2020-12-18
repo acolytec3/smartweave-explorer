@@ -101,7 +101,7 @@ const WalletLoader = () => {
     let wallet = await addWallet(address)
     dispatch({ type: 'CHANGE_ACTIVE_WALLET', payload: { address: wallet.address, balance: wallet.balance } })
     let mnemonic = state.wallets.find((wallet) => wallet.address === address)?.mnemonic
-    if (mnemonic) setAddress(mnemonic) 
+    if (mnemonic) setAddress(mnemonic)
     else setAddress('')
   }
 
@@ -119,18 +119,18 @@ const WalletLoader = () => {
           )}
         </Dropzone>
       </Box>
-    
-   <Stack w="100%">
-      <Input w="93%%" placeholder="Wallet mnemonic" value={address} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
-      <Flex direction="row">
-        <Button isDisabled={(address === '')} onClick={() => loadWalletFromMnemonic(address)}>Load Wallet</Button>
-        <Button ml={2} onClick={generateWallet}>Generate New Wallet</Button>
-      </Flex>
-    </Stack>
-    <Stack w="100%">
-      <Input w="93%%" placeholder="Read-only wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
-      <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
-    </Stack></Skeleton>
+      <Stack w="100%" mb={2}>
+        <Input w="93%%" placeholder="Wallet mnemonic" value={address} onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
+        <Flex direction="row">
+          <Button isDisabled={(address === '')} onClick={() => loadWalletFromMnemonic(address)}>Load Wallet</Button>
+          <Button ml={2} onClick={generateWallet}>Generate New Wallet</Button>
+        </Flex>
+      </Stack>
+      <Stack w="100%">
+        <Input w="93%%" placeholder="Read-only wallet address" onChange={(evt: React.ChangeEvent<HTMLInputElement>) => { setAddress(evt.target.value) }} />
+        <Button isDisabled={(address === '')} onClick={() => addAddress()}>Track Address</Button>
+      </Stack>
+    </Skeleton>
     {state.address && <>
       <Divider />
       <Heading size="sm">Loaded Wallets</Heading>
@@ -151,7 +151,7 @@ const WalletLoader = () => {
           }}>
             <FaTrash size={16} />
             <Text>Remove</Text></Box>
-            <Box as="button" onClick={() => createWalletFile(wallet)}>
+          <Box as="button" onClick={() => createWalletFile(wallet)}>
             <FaKey size={16} />
             <Text>Download Keyfile</Text></Box>
         </Stack></Stack>)
