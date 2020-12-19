@@ -12,7 +12,7 @@ import TransactionDrawer from './components/TransactionDrawer';
 import Transactions from './components/Transactions';
 import WalletLoader from './components/WalletLoader';
 import WalletContext, { initWalletState } from './context/walletContext';
-import { addWallet, getBlockHeight } from './providers/wallets';
+import { getBlockHeight } from './providers/wallets';
 import walletReducer from './reducers/walletReducer';
 
 function App() {
@@ -32,12 +32,6 @@ function App() {
   }, [])
 
   React.useEffect(() => {
-    const loadWallet = async (data: string) => {
-      let wallet = JSON.parse(data)
-      let walletDeets = await addWallet(wallet)
-      dispatch({ type: 'ADD_WALLET', payload: { ...walletDeets, key: wallet } })
-      setLoading(false)
-    }
     get('wallets').then((data: any) => {
       if (data) {
         let loadedState = JSON.parse(data)
