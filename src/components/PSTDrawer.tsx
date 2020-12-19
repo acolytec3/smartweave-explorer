@@ -1,7 +1,7 @@
 
 import {
     Avatar, Box, Button, Collapse, Drawer,
-    DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, HStack,
+    DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Heading, HStack,
     Stack, Text, useDisclosure
 } from "@chakra-ui/core";
 import React from 'react';
@@ -131,6 +131,7 @@ const PSTDrawer: React.FC<PSTDrawerProps> = ({ isOpen, close, contractState }) =
             <DrawerContent >
                 <DrawerCloseButton onClick={close} />
                 <DrawerHeader >
+                    {contractState.name && <Heading size="md">{contractState.name}</Heading>}
                     <HStack>
                         <Text>{contractState.ticker}</Text>
                         {logo !== '' && <Avatar src={`https://arweave.net/${logo}`} />}
