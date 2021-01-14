@@ -14,6 +14,8 @@ const Txn = (txn: any) => {
       <AccordionPanel border="1px">
         <Heading size="xs" fontSize="12px">Metadata</Heading>
         <SimpleGrid columns={2}>
+          <Text fontSize={10}>Transaction ID: </Text>
+          <Text cursor="pointer" onClick={() => navigator.clipboard.writeText(txn.node.id)}fontSize={10}>{txn.node.id}</Text>
           <Text fontSize={10}>Fee: </Text>
           <Text fontSize={10}>{txn.node.fee.ar} AR</Text>
           {txn.node.recipient && <React.Fragment><Text fontSize={10}>Recipient: </Text>

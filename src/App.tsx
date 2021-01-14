@@ -1,5 +1,5 @@
 import {
-  Box, ChakraProvider, Heading, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, theme
+  Box, Heading, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs
 } from '@chakra-ui/react';
 import { get } from 'idb-keyval';
 import React from 'react';
@@ -43,7 +43,7 @@ function App() {
 
   return (
     <WalletContext.Provider value={{ dispatch, state }}>
-      <ChakraProvider theme={theme}>
+
         <Stack w="100%" align="center" >
           <Heading>ArMob 2.0</Heading>
           <Tabs isFitted align="center" variant="enclosed-colored">
@@ -83,7 +83,6 @@ function App() {
         </SpeedDial>}
         <TransactionDrawer isOpen={open} close={() => handleClose('txn')} />
         <CameraWindow isOpen={openCamera} close={() => handleClose('camera')} setTxnOpen={() => setOpen(true)} />
-      </ChakraProvider>
     </WalletContext.Provider>
   );
 }
