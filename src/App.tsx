@@ -1,6 +1,6 @@
 import {
   Box, ChakraProvider, Heading, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, theme
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import { get } from 'idb-keyval';
 import React from 'react';
 import { FaCameraRetro, FaUpload } from 'react-icons/fa';

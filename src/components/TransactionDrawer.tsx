@@ -12,7 +12,7 @@ import {
     SimpleGrid,
     Heading,
     Spinner
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import Dropzone from 'react-dropzone'
 import WalletContext from '../context/walletContext'
 import { getFee, uploadFile } from '../providers/wallets'

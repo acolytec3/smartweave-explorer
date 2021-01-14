@@ -1,4 +1,4 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Button, Code, Collapse, Heading, HStack, Input, List, ListItem, Radio, RadioGroup, Spinner, Text, Textarea, useDisclosure, useToast, VStack } from '@chakra-ui/core';
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Button, Code, Collapse, Heading, HStack, Input, List, ListItem, Radio, RadioGroup, Spinner, Text, Textarea, useDisclosure, useToast, VStack } from '@chakra-ui/react';
 import React from 'react';
 import WalletContext from '../context/walletContext';
 import { getContractState, getTxnData, runFunction, testFunction } from '../providers/wallets';

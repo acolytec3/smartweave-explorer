@@ -15,7 +15,7 @@ import {
   Text,
   useClipboard,
   useToast,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { generateMnemonic, getKeyFromMnemonic } from "arweave-mnemonic-keys";
 import { set } from "idb-keyval";
 import React from "react";

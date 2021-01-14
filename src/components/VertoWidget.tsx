@@ -3,7 +3,7 @@ import {
     Popover, PopoverArrow, PopoverBody,
     PopoverCloseButton, PopoverContent,
     PopoverHeader, PopoverTrigger, Spinner, Text, VStack
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import React from 'react';
 import WalletContext from '../context/walletContext';
 import { createTrade, executeTrade, getOpenBuyDeets, getOpenSellDeets } from '../providers/verto';

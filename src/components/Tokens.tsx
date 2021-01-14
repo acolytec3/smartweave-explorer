@@ -21,7 +21,7 @@ import {
   Stack,
   Text,
   useToast,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { set } from "idb-keyval";
 import React from "react";
 import { FaCaretRight } from "react-icons/fa";

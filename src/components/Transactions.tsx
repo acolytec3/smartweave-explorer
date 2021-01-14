@@ -1,4 +1,4 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Button, Heading, IconButton, Input, Popover, PopoverContent, PopoverTrigger, Radio, RadioGroup, SimpleGrid, Spinner, Stack, Text } from '@chakra-ui/core'
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Button, Heading, IconButton, Input, Popover, PopoverContent, PopoverTrigger, Radio, RadioGroup, SimpleGrid, Spinner, Stack, Text } from '@chakra-ui/react'
 import React from 'react'
 import { FaCaretRight, FaSearch } from 'react-icons/fa'
 import WalletContext from '../context/walletContext'

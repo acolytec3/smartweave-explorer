@@ -3,7 +3,7 @@ import {
     Avatar, Box, Button, Collapse, Drawer,
     DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Heading, HStack,
     Stack, Text, useDisclosure
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import React from 'react';
 import WalletContext from '../context/walletContext';
 import { timeLeft } from '../providers/wallets';

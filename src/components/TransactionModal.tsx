@@ -8,7 +8,7 @@ import {
     ModalBody,
     ModalCloseButton,
     useToast, InputRightElement, InputGroup, FormControl, FormErrorMessage, Modal
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { getFee, sendTransfer } from '../providers/wallets'
 
 import WalletContext from '../context/walletContext'
