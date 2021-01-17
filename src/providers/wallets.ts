@@ -29,7 +29,7 @@ export const addWallet = async (wallet: any): Promise<{ address: string, balance
   return { address, balance }
 }
 
-export const getToken = async (contractID: string) : Promise<token> => {
+export const getToken = async (contractID: string): Promise<token> => {
   let arweave = getArweaveInstance()
   let token = await getContract(arweave, contractID)
   return { ticker: token.ticker, contract: contractID, contractState: token }
@@ -131,20 +131,42 @@ export const sendTokens = async (contract: string, amount: number, target: strin
     })
     console.log('Dry-run result is:', res)
     if (res.type === 'ok') {
-      let txId = await interactWrite(arweave, key, contract, {
-        target: target,
-        qty: amount,
-        function: 'transfer'
-      })
-      console.log(res)
-      return txId
+      const tx = await arweave.createTransaction(
+        {
+          target: target,
+          data: Math.random().toString().slice(-4),
+        },
+        key
+      );
+      let tags = {
+        'Contract': contract,
+        'App-Name': 'SmartWeaveAction',
+        'App-Version': '0.3.0',
+        'Input': JSON.stringify({
+          function: 'transfer',
+          target: target,
+          qty: amount
+        })
+      }
+
+      for (const [key, value] of Object.entries(tags)) {
+        tx.addTag(key, value.toString());
+      }
+
+      await arweave.transactions.sign(tx, key);
+
+      console.log(tx.id)
+      let status = await arweave.transactions.post(tx)
+      console.log(status.statusText)
+
+      return "success!"
     }
-    return "success!"
   }
   catch (err) {
     console.log(err)
     return (err.toString())
   }
+  return ''
 }
 
 export const uploadFile = async (data: File, key: JWKInterface, tags: { name: string; value: string; }[]) => {
@@ -190,10 +212,10 @@ export const generate = async (): Promise<string> => {
   return (await generateKeyPair('rsa', { modulusLength: 4096, format: 'raw-pem' })).mnemonic
 }
 
-export const timeLeft = (currentBlock: number, endBlock:number): string => {
-  let timeLeft = (endBlock - currentBlock)/720
+export const timeLeft = (currentBlock: number, endBlock: number): string => {
+  let timeLeft = (endBlock - currentBlock) / 720
   if (timeLeft > 1) return `${Math.floor(timeLeft)} more days`
-  else if (timeLeft > 0.041) return `${Math.floor(timeLeft*24)} more hours`
+  else if (timeLeft > 0.041) return `${Math.floor(timeLeft * 24)} more hours`
   else return 'less than 1 hour'
 }
 
@@ -206,7 +228,7 @@ export const getAllCommunityIds = async (): Promise<string[]> => {
   const ids: string[] = [];
   while (hasNextPage) {
     const query = {
-          query: `
+      query: `
               query {
                   transactions(
                       tags: [
@@ -236,12 +258,12 @@ export const getAllCommunityIds = async (): Promise<string[]> => {
     const data = res.data;
 
     for (let i = 0, j = data.data.transactions.edges.length; i < j; i++) {
-          ids.push(data.data.transactions.edges[i].node.id);
+      ids.push(data.data.transactions.edges[i].node.id);
     }
     hasNextPage = data.data.transactions.pageInfo.hasNextPage;
 
     if (hasNextPage) {
-          cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
+      cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
     }
   }
 
@@ -250,7 +272,8 @@ export const getAllCommunityIds = async (): Promise<string[]> => {
 
 export const getTxnData = async (txId: string): Promise<string> => {
   let arweave = getArweaveInstance()
-  let query = { query: `
+  let query = {
+    query: `
   query {
     transactions(ids: ["${txId}"]) {
         edges {
@@ -266,24 +289,24 @@ export const getTxnData = async (txId: string): Promise<string> => {
 }`}
   let res = await arweave.api.post('/graphql', query)
   console.log(res)
-  let contractSrcTxn = res.data.data.transactions.edges[0].node.tags.filter((tag:any) => tag.name === 'Contract-Src')[0].value
+  let contractSrcTxn = res.data.data.transactions.edges[0].node.tags.filter((tag: any) => tag.name === 'Contract-Src')[0].value
   console.log(contractSrcTxn)
-  let contractSource = await arweave.transactions.getData(contractSrcTxn, {decode: true, string: true}) as string
+  let contractSource = await arweave.transactions.getData(contractSrcTxn, { decode: true, string: true }) as string
   return contractSource;
 }
 
-export const getContractState = async (contractId: string) : Promise<any> => {
+export const getContractState = async (contractId: string): Promise<any> => {
   let arweave = getArweaveInstance()
   return await getContract(arweave, contractId)
 }
 
-export const testFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any) : Promise<string> => {
+export const testFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any): Promise<string> => {
   let arweave = getArweaveInstance()
   console.log('params are')
   console.log(params)
   console.log('types are')
   console.log(types)
-  let newParams = {...params}
+  let newParams = { ...params }
   for (let param in newParams) {
     if (types[param] === "integer") {
       newParams[param] = parseInt(params[param])
@@ -300,13 +323,13 @@ export const testFunction = async (method: string, contractId: string, params: a
   return res.type
 }
 
-export const runFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any, methodType: string) : Promise<any> => {
+export const runFunction = async (method: string, contractId: string, params: any, key: JWKInterface, types: any, methodType: string): Promise<any> => {
   let arweave = getArweaveInstance()
   console.log('params are')
   console.log(params)
   console.log('types are')
   console.log(types)
-  let newParams = {...params}
+  let newParams = { ...params }
   for (let param in newParams) {
     if (types[param] === "integer") {
       newParams[param] = parseInt(params[param])
@@ -317,10 +340,11 @@ export const runFunction = async (method: string, contractId: string, params: an
   }
   let res: string | false
   if (methodType === 'write') {
-     res = await interactWrite(arweave, key, contractId, {
-    ...newParams,
-    function: method
-  })}
+    res = await interactWrite(arweave, key, contractId, {
+      ...newParams,
+      function: method
+    })
+  }
   else res = (await interactRead(arweave, key, contractId, {
     ...newParams,
     function: method
