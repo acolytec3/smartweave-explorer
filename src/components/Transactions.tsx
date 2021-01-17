@@ -37,10 +37,10 @@ const Txn = (txn: any, tokens: token[]) => {
         (tag: any) => tag.name === "Contract"
       )[0].value;
       let tokenObjects = tokens.filter((token) => token.contract === contract);
-      token = tokenObjects[0].ticker;
+      tokenObjects.length > 0 ? token = tokenObjects[0].ticker : token = 'of some PST' //a hack to show this isn't an AR transaction until I figure out a better way to do it
     }
   }
-  
+
   return (
     <AccordionItem key={txn.node.id} textAlign="left">
       <AccordionButton
