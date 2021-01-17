@@ -152,7 +152,7 @@ export const sendTokens = async (contract: string, amount: number, target: strin
       for (const [key, value] of Object.entries(tags)) {
         tx.addTag(key, value.toString());
       }
-
+      tx.addTag('App-Name', 'ArMob 2.0')
       await arweave.transactions.sign(tx, key);
 
       console.log(tx.id)
