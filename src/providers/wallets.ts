@@ -2,8 +2,6 @@ import Arweave from 'arweave'
 import axios from 'axios'
 import { interactWriteDryRun, interactWrite, interactRead, } from 'smartweave'
 import { getContract } from 'cacheweave'
-//@ts-ignore
-import { generateKeyPair } from 'human-crypto-keys'
 import { token } from '../context/walletContext'
 import { JWKInterface } from 'arweave/node/lib/wallet'
 
@@ -31,7 +29,8 @@ export const addWallet = async (wallet: any): Promise<{ address: string, balance
 
 export const getToken = async (contractID: string): Promise<token> => {
   let arweave = getArweaveInstance()
-  let token = await getContract(arweave, contractID)
+  let token = await getContract(arweave, contractID);
+  //@ts-ignore
   return { ticker: token.ticker, contract: contractID, contractState: token }
 }
 
@@ -196,7 +195,9 @@ export const updateTokens = async (tokens: token[], address: string): Promise<to
     let tokenBalances = await Promise.all(tokens.map((token: token) =>
       getContract(arweave, token.contract).then(contractState => {
         console.log(contractState)
+        //@ts-ignore
         if (contractState.balances)
+        //@ts-ignore
           return { 'ticker': contractState.ticker as string, 'contract': token.contract, contractState: contractState }
         else return { 'ticker': '', 'contract': token.contract, contractState: contractState }
       })))
@@ -206,10 +207,6 @@ export const updateTokens = async (tokens: token[], address: string): Promise<to
     console.log('Error updating tokens', err)
     return false
   }
-}
-
-export const generate = async (): Promise<string> => {
-  return (await generateKeyPair('rsa', { modulusLength: 4096, format: 'raw-pem' })).mnemonic
 }
 
 export const timeLeft = (currentBlock: number, endBlock: number): string => {
