@@ -1,6 +1,6 @@
 {
-  "short_name": "ArMob V2",
-  "name": "Arweave Mobile 2.0 - A Mobile Wallet for the Permaweb",
+  "short_name": "Smartweave Explorer",
+  "name": "A graphical interface for Smartweave",
   "icons": [
     {
       "src": "64x64.png",
