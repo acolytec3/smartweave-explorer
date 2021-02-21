@@ -30,7 +30,7 @@
     "react-html5-camera-photo": "^1.5.4",
     "react-icons": "^3.11.0",
     "react-scripts": "4.0.0",
-    "smartweave": "^0.4.23",
+    "smartweave": "^0.4.25",
     "typescript": "4.0.5",
     "web-vitals": "^0.2.4",
     "workbox-background-sync": "^5.1.4",
