@@ -31,7 +31,7 @@ import {
   testFunction,
 } from "../providers/wallets";
 const acorn = require("acorn");
-const walk = require("acorn-walk");
+
 interface FunctionCallProps {
   name: string;
   params: string[];
