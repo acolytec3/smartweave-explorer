@@ -26,6 +26,7 @@ import React from "react";
 import WalletContext from "../context/walletContext";
 import {
   getTxnData,
+  getContractState
 } from "../providers/wallets";
 import {
   FunctionCallProps,
@@ -48,11 +49,11 @@ const SmartweaveExplorer = () => {
   const getSource = async () => {
       let source = await getTxnData(contractId);
       setSource(source);
-      console.log(source)
-      let methods = await getInputMethods(contractSource);
-      console.log(methods)
+      let methods = await getInputMethods(source);
       if (methods?.writeMethods) setWriteMethods(methods.writeMethods);
       if (methods?.readMethods) setReadMethods(methods.readMethods);
+      let res = await getContractState(contractId);
+      setContractState(res);
   }
 
   return (
