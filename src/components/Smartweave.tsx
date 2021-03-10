@@ -7,11 +7,13 @@ import {
   Box,
   Button,
   Code,
+  Collapse,
   Heading,
   Input,
   List,
   ListItem,
   Textarea,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
@@ -24,6 +26,8 @@ import {
 import FunctionCall from "./FunctionCall";
 
 const SmartweaveExplorer = () => {
+  const { isOpen, onToggle } = useDisclosure()
+
   const [contractSource, setSource] = React.useState("");
   const [displayId, setDisplayId] = React.useState('')
   const [contractId, setID] = React.useState("");
@@ -62,21 +66,21 @@ const SmartweaveExplorer = () => {
 
   return (
     <VStack>
-      <Accordion allowToggle>
-        <AccordionItem>
-          <AccordionButton>
+
+      <Button onClick={onToggle}>
           <Box flex="1" textAlign="left">
          PSC Contract Addresses
         </Box>
-          <AccordionIcon />
-          </AccordionButton>
-        <AccordionPanel>
+        </Button>
+        <Collapse in={isOpen} animateOpacity>  
         <List>
           {contractIds.map((id) => {
             return (
               <ListItem
                 onClick={() => {
                   setID(id);
+                  setDisplayId(id);
+                  onToggle();
                 }}
                 cursor="pointer"
               >
@@ -85,9 +89,7 @@ const SmartweaveExplorer = () => {
             );
           })}
         </List>
-        </AccordionPanel>
-        </AccordionItem>
-        </Accordion>
+        </Collapse>
       <Input
         placeholder="Smartweave Contract ID"
         value={displayId}
