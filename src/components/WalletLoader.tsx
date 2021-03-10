@@ -17,7 +17,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { generateMnemonic, getKeyFromMnemonic } from "arweave-mnemonic-keys";
-import { set } from "idb-keyval";
 import React from "react";
 import Dropzone from "react-dropzone";
 import { FaCheck, FaGripHorizontal, FaKey, FaTrash } from "react-icons/fa";
@@ -42,12 +41,12 @@ const WalletLoader = () => {
         try {
           let walletObject = JSON.parse(event!.target!.result as string);
           let walletDeets = await addWallet(walletObject);
-          await set("wallet", JSON.stringify(walletObject));
+
           dispatch({
             type: "ADD_WALLET",
             payload: { ...walletDeets, key: walletObject, mnemonic: walletObject.mnemonic },
           });
-          set('wallets', JSON.stringify(state))
+
         } catch (err) {
           console.log("Invalid json in wallet file");
           toast({
@@ -88,13 +87,13 @@ const WalletLoader = () => {
     setLoading(true);
     let walletObject = await getKeyFromMnemonic(mnemonic);
     let walletDeets = await addWallet(walletObject);
-    await set("wallet", JSON.stringify(walletObject));
+
     setLoading(false);
     dispatch({
       type: "ADD_WALLET",
       payload: { ...walletDeets, key: walletObject, mnemonic: mnemonic },
     });
-    set('wallets', JSON.stringify(state))
+
   };
 
   const generateWallet = async () => {
@@ -104,12 +103,6 @@ const WalletLoader = () => {
     loadWalletFromMnemonic(mnemonic);
   };
 
-  const addAddress = async () => {
-    setLoading(true);
-    let walletDeets = await addWallet(address);
-    dispatch({ type: "ADD_WALLET", payload: { ...walletDeets, key: "" } });
-    set('wallets', JSON.stringify(state))
-  };
 
   const createWalletFile = async (wallet: wallet) => {
     const blob = new Blob([JSON.stringify({...wallet.key, mnemonic: wallet.mnemonic}, null, 2)], {
@@ -168,17 +161,6 @@ const WalletLoader = () => {
           </Button>
         </Stack>
         <Stack w="100%">
-          <Heading size="xs">Track a Wallet</Heading>
-          <Input
-            w="93%%"
-            placeholder="Enter a wallet address"
-            onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-              setAddress(evt.target.value);
-            }}
-          />
-          <Button isDisabled={address === ""} onClick={() => addAddress()}>
-            Track Address
-          </Button>
           <Button mt={2} onClick={generateWallet}>
             Generate New Wallet
           </Button>

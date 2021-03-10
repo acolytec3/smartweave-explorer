@@ -26,8 +26,6 @@ function App() {
             </TabPanels>
             <TabList position="fixed" bottom="0px" left="0px" w="100vw">
               <Tab>Wallet</Tab>
-              <Tab isDisabled={state.address === ''}>Tokens</Tab>
-              <Tab isDisabled={state.address === ''}>Transactions</Tab>
               <Tab isDisabled={state.key === ''}>Smartweave</Tab>
             </TabList>
           </Tabs>

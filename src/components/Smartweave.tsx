@@ -25,19 +25,14 @@ import {
 import React from "react";
 import WalletContext from "../context/walletContext";
 import {
-  getContractState,
   getTxnData,
-  runFunction,
-  testFunction,
 } from "../providers/wallets";
-const acorn = require("acorn");
-
-interface FunctionCallProps {
-  name: string;
-  params: string[];
-  methodType: string;
-  contractId: string;
-}
+import {
+  FunctionCallProps,
+  testFunction,
+  runFunction,
+  getInputMethods
+} from '../providers/smartweave';
 
 const SmartweaveExplorer = () => {
   const [contractSource, setSource] = React.useState("");
@@ -51,98 +46,14 @@ const SmartweaveExplorer = () => {
   const [contractState, setContractState] = React.useState({} as any);
 
   const getSource = async () => {
-    let res = await getTxnData(contractId);
-    setSource(res);
-    if (res) {
-      setSource(res);
-      let src = await acorn.parse(res, {
-        ecmaVersion: "latest",
-        sourceType: "module",
-      });
-      if (src.body[0].declaration.id.name === "handle") {
-        let allMethods = src.body[0].declaration.body.body.filter(
-          (node: any) =>
-            node.type === "IfStatement" &&
-            node.test.left.object.name === "input"
-        );
-        let methods = getInputMethods(allMethods);
-        setWriteMethods(methods.writeMethods.filter((method) => method.name));
-        setReadMethods(methods.readMethods.filter((method) => method.name));
-        console.log(methods);
-      }
-      res = await getContractState(contractId);
-      console.log(res);
-      setContractState(res);
-    }
-  };
-
-  const getInputMethods = (
-    src: any[]
-  ): {
-    readMethods: FunctionCallProps[];
-    writeMethods: FunctionCallProps[];
-  } => {
-    let readMethods: FunctionCallProps[] = [];
-    let writeMethods: FunctionCallProps[] = [];
-    src.forEach((node) => {
-      if (
-        node.test.type === "BinaryExpression" &&
-        node.test.left.object &&
-        node.test.left.object.name === "input"
-      ) {
-        try {
-          console.log(node);
-          let returnStatement =
-            node.consequent.body[node.consequent.body.length - 1]; //Get write methods
-          if (
-            returnStatement.type === "ReturnStatement" &&
-            returnStatement.argument.properties[0].key.name === "state"
-          ) {
-            let params = node.consequent.body.filter(
-              (param: any) =>
-                param.type === "VariableDeclaration" &&
-                param.declarations[0].init.object &&
-                param.declarations[0].init.object.name === "input"
-            );
-            let paramNames = params.map(
-              (param: any) => param.declarations[0].init.property.name
-            );
-            let name = node.test.right.value;
-            writeMethods.push({
-              name: name,
-              params: paramNames,
-              methodType: "write",
-              contractId: contractId,
-            });
-          } else {
-            //Get read methods
-            let params = node.consequent.body.filter(
-              (param: any) =>
-                param.type === "VariableDeclaration" &&
-                ((param.declarations[0].init.left &&
-                  param.declarations[0].init.left.object &&
-                  param.declarations[0].init.left.object.name === "input") ||
-                  (param.declarations[0].init.object &&
-                    param.declarations[0].init.object.name === "input"))
-            );
-            let paramNames = params.map(
-              (param: any) => param.declarations[0].init.left.property.name
-            );
-            let name = node.test.right.value;
-            readMethods.push({
-              name: name,
-              params: paramNames,
-              methodType: "read",
-              contractId: contractId,
-            });
-          }
-        } catch (err) {
-          console.log(err);
-        }
-      }
-    });
-    return { readMethods, writeMethods };
-  };
+      let source = await getTxnData(contractId);
+      setSource(source);
+      console.log(source)
+      let methods = await getInputMethods(contractSource);
+      console.log(methods)
+      if (methods?.writeMethods) setWriteMethods(methods.writeMethods);
+      if (methods?.readMethods) setReadMethods(methods.readMethods);
+  }
 
   return (
     <VStack>
@@ -207,7 +118,14 @@ const SmartweaveExplorer = () => {
 
 export default SmartweaveExplorer;
 
-const FunctionCall: React.FC<FunctionCallProps> = ({
+export interface FunctionCallComponentProps {
+  name: string;
+  params: string[];
+  methodType: string;
+  contractId: string;
+}
+
+const FunctionCall: React.FC<FunctionCallComponentProps> = ({
   name,
   params,
   methodType,
