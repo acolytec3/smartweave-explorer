@@ -53,9 +53,7 @@ export const getTxnData = async (txId: string): Promise<string> => {
     }
 }`}
   let res = await arweave.api.post('/graphql', query)
-  console.log(res)
   let contractSrcTxn = res.data.data.transactions.edges[0].node.tags.filter((tag: any) => tag.name === 'Contract-Src')[0].value
-  console.log(contractSrcTxn)
   let contractSource = await arweave.transactions.getData(contractSrcTxn, { decode: true, string: true }) as string
   return contractSource;
 }
@@ -65,5 +63,54 @@ export const getContractState = async (contractId: string): Promise<any> => {
   return await getContract(arweave, contractId)
 }
 
+export const getAllCommunityIds = async (): Promise<string[]> => {
+  let cursor = '';
+  let hasNextPage = true;
 
+  let client = getArweaveInstance()
+
+  const ids: string[] = [];
+  while (hasNextPage) {
+    const query = {
+      query: `
+              query {
+                  transactions(
+                      tags: [
+                          { name: "App-Name", values: ["SmartWeaveContract"] }
+                          {
+                              name: "Contract-Src"
+                              values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI"]
+                          }
+                      ]
+                      after: "${cursor}"
+                      first: 100
+                  ) {
+                      pageInfo {
+                          hasNextPage
+                      }
+                      edges {
+                          cursor
+                          node {
+                              id
+                          }
+                      }
+                  }
+              }            
+          `,
+    };
+    const res = await client.api.post('/graphql', query);
+    const data = res.data;
+
+    for (let i = 0, j = data.data.transactions.edges.length; i < j; i++) {
+      ids.push(data.data.transactions.edges[i].node.id);
+    }
+    hasNextPage = data.data.transactions.pageInfo.hasNextPage;
+
+    if (hasNextPage) {
+      cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
+    }
+  }
+
+  return ids;
+}
 

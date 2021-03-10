@@ -34,6 +34,7 @@ export const getInputMethods = (
         );
         let readMethods: FunctionCallProps[] = [];
         let writeMethods: FunctionCallProps[] = [];
+        console.log(allMethods);
         allMethods.forEach((node: any) => {
             if (
                 node.test.type === "BinaryExpression" &&
