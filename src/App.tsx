@@ -14,7 +14,7 @@ function App() {
   return (
     <WalletContext.Provider value={{ dispatch, state }}>
         <Stack w="100%" align="center" >
-          <Heading>ArMob 2.0</Heading>
+          <Heading>Smartweave Explorer</Heading>
           <Tabs isFitted align="center" variant="enclosed-colored">
             <TabPanels w="100vw">
               <TabPanel>
