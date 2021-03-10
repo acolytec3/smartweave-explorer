@@ -72,15 +72,6 @@ export const getInputMethods = (
                         });
                     } else {
                         //Get read methods
-                        let params = node.consequent.body.filter(
-                            (param: any) =>
-                                param.type === "VariableDeclaration" &&
-                                ((param.declarations[0].init.left &&
-                                    param.declarations[0].init.left.object &&
-                                    param.declarations[0].init.left.object.name === "input") ||
-                                    (param.declarations[0].init.object &&
-                                        param.declarations[0].init.object.name === "input"))
-                        );
                         let paramNames = getParamNames(node);
                         let name = node.test.right.value;
                         readMethods.push({
