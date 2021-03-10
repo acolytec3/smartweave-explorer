@@ -2,6 +2,7 @@ import Arweave from 'arweave'
 import { interactWriteDryRun, interactWrite, interactRead, } from 'smartweave'
 import { JWKInterface } from 'arweave/node/lib/wallet'
 const acorn = require("acorn");
+const walk = require('acorn-walk');
 
 export const getArweaveInstance = () => {
     return Arweave.init({
@@ -16,6 +17,20 @@ export interface FunctionCallProps {
     methodType: string;
 }
 
+const getParamNames = (node:any):string[] => {
+    let paramNames: string[] = []
+    walk.recursive(node, [], {
+        VariableDeclaration(node: any) {
+            if (node.declarations[0]?.init?.object?.name === "input") {
+                paramNames.push(node.declarations[0].init.property.name)
+            }
+            else if (node.declarations[0]?.init?.left?.object?.name === "input") {
+                paramNames.push(node.declarations[0].init.left.property.name)
+            }
+        }
+    });
+    return paramNames
+}
 export const getInputMethods = (
     contractSource: string
 ): {
@@ -34,30 +49,21 @@ export const getInputMethods = (
         );
         let readMethods: FunctionCallProps[] = [];
         let writeMethods: FunctionCallProps[] = [];
-        console.log(allMethods);
         allMethods.forEach((node: any) => {
             if (
                 node.test.type === "BinaryExpression" &&
                 node.test.left.object &&
                 node.test.left.object.name === "input"
             ) {
+
                 try {
-                    console.log(node);
                     let returnStatement =
                         node.consequent.body[node.consequent.body.length - 1]; //Get write methods
                     if (
                         returnStatement.type === "ReturnStatement" &&
                         returnStatement.argument.properties[0].key.name === "state"
                     ) {
-                        let params = node.consequent.body.filter(
-                            (param: any) =>
-                                param.type === "VariableDeclaration" &&
-                                param.declarations[0].init.object &&
-                                param.declarations[0].init.object.name === "input"
-                        );
-                        let paramNames = params.map(
-                            (param: any) => param.declarations[0].init.property.name
-                        );
+                        let paramNames = getParamNames(node);
                         let name = node.test.right.value;
                         writeMethods.push({
                             name: name,
@@ -75,9 +81,7 @@ export const getInputMethods = (
                                     (param.declarations[0].init.object &&
                                         param.declarations[0].init.object.name === "input"))
                         );
-                        let paramNames = params.map(
-                            (param: any) => param.declarations[0].init.left.property.name
-                        );
+                        let paramNames = getParamNames(node);
                         let name = node.test.right.value;
                         readMethods.push({
                             name: name,
