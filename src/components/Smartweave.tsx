@@ -1,9 +1,4 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
   Code,
@@ -14,14 +9,14 @@ import {
   ListItem,
   Textarea,
   useDisclosure,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import React from "react";
 import { FunctionCallProps, getInputMethods } from "../providers/smartweave";
 import {
   getAllCommunityIds,
   getContractState,
-  getTxnData,
+  getTxnData
 } from "../providers/wallets";
 import FunctionCall from "./FunctionCall";
 

@@ -27,6 +27,9 @@ const getParamNames = (node:any):string[] => {
             else if (node.declarations[0]?.init?.left?.object?.name === "input") {
                 paramNames.push(node.declarations[0].init.left.property.name)
             }
+            else if (node.declarations[0]?.init?.argument?.object?.name === "input") {
+                paramNames.push(node.declarations[0].init.argument.property.name)
+            }
         }
     });
     return paramNames
@@ -50,6 +53,7 @@ export const getInputMethods = (
         let readMethods: FunctionCallProps[] = [];
         let writeMethods: FunctionCallProps[] = [];
         allMethods.forEach((node: any) => {
+            console.log(node)
             if (
                 node.test.type === "BinaryExpression" &&
                 node.test.left.object &&
